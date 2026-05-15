@@ -172,6 +172,7 @@ tr:hover td{background:#ffffff08;}
   <div class="nav-item" onclick="showPage('graficos',this)"><span class="nav-icon">📈</span>Gráficos</div>
   <div class="nav-item" onclick="showPage('cardapioweb',this)"><span class="nav-icon">🍕</span>Cardápio</div>
   <div class="nav-item" onclick="showPage('notas',this)"><span class="nav-icon">📸</span>Ler Nota</div>
+  <div class="nav-item" onclick="showPage('motoboys',this)"><span class="nav-icon">🛵</span>Motoboys</div>
 </nav>
 
 <!-- VISÃO GERAL -->
@@ -254,7 +255,7 @@ tr:hover td{background:#ffffff08;}
 
   <!-- 5 PIZZAS MAIS VENDIDAS -->
   <div class="section">
-    <div class="section-title"><span class="icon">🍕</span> 5 Pizzas Mais Vendidas — Mês (Cardápio Web)</div>
+    <div class="section-title"><span class="icon">🍕</span> Ranking de Vendas — Cardápio Web</div>
     <div id="pizzaRanking" style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
       <div style="color:var(--muted);font-size:0.8rem;font-weight:600;text-align:center;padding:20px">Sincronize o Cardápio Web para ver o ranking 🍕</div>
     </div>
@@ -482,10 +483,28 @@ tr:hover td{background:#ffffff08;}
   </div>
   <div class="section">
     <div class="section-title"><span class="icon">🔒</span> Fechamento de Domingo</div>
-    <p style="font-size:0.8rem;color:var(--muted);font-weight:600;margin-bottom:12px">Ao fechar, o CMV é calculado e os lançamentos são zerados para a próxima semana.</p>
-    <div class="form-row">
-      <input type="number" id="estoqueFinVal" placeholder="Valor estoque final (R$)" step="0.01" min="0">
-      <button class="btn btn-red" onclick="fecharSemana()">🔒 Fechar Semana</button>
+    <p style="font-size:0.8rem;color:var(--muted);font-weight:600;margin-bottom:14px">
+      Confira e ajuste as quantidades finais de cada item. O sistema já pré-preenche com base no estoque atual.
+      Ajuste o que consumiu na semana e clique em Fechar.
+    </p>
+    <button class="btn btn-yellow" onclick="abrirFechamento()" style="margin-bottom:16px">📋 Preparar Lista de Fechamento</button>
+    <div id="fechamentoLista" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        <div>
+          <span style="font-size:0.8rem;color:var(--muted);font-weight:600">Total calculado: </span>
+          <span id="fechamentoTotal" style="font-size:1rem;font-weight:900;color:var(--yellow)">R$ 0,00</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" onclick="document.getElementById('fechamentoLista').style.display='none'">Cancelar</button>
+          <button class="btn btn-red" onclick="fecharSemana()">🔒 Confirmar Fechamento</button>
+        </div>
+      </div>
+      <div class="scrolltable">
+        <table>
+          <thead><tr><th>Item</th><th>Un.</th><th>Qtd Atual</th><th>Qtd Final</th><th>Custo Unit.</th><th>Total</th></tr></thead>
+          <tbody id="tblFechamento"></tbody>
+        </table>
+      </div>
     </div>
   </div>
   <div class="section">
@@ -613,7 +632,7 @@ async function dbPost(t,d){const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:
 async function dbPatch(t,id,d){const r=await fetch(`${SB_URL}/rest/v1/${t}?id=eq.${id}`,{method:'PATCH',headers:hdrs,body:JSON.stringify(d)});if(!r.ok)throw new Error(await r.text());return r.json();}
 async function dbDelete(t,id){const r=await fetch(`${SB_URL}/rest/v1/${t}?id=eq.${id}`,{method:'DELETE',headers:hdrs});if(!r.ok)throw new Error(await r.text());}
 
-let state={entradas:[],saidas:[],estoque:[],compras:[],futuras:[],cmvHistorico:[],estoqueInicialSemana:0,mpSyncedIds:[],weekData:{seg:0,ter:0,qua:0,qui:0,sex:0,sab:0,dom:0},monthEntradas:[],monthSaidas:[],monthCompras:[],cwAllPedidos:[]};
+let state={entradas:[],saidas:[],estoque:[],compras:[],futuras:[],cmvHistorico:[],estoqueInicialSemana:0,mpSyncedIds:[],weekData:{seg:0,ter:0,qua:0,qui:0,sex:0,sab:0,dom:0},monthEntradas:[],monthSaidas:[],monthCompras:[],cwAllPedidos:[],motoboys:[]};
 
 const ESTOQUE_INICIAL=[
   {nome:"Farinha de Trigo Sotrigo 1kg",unidade:"sc",qtd:40,custo:3.45},
@@ -696,7 +715,7 @@ const FUTURAS_INICIAL=[
 async function loadAll(){
   try{
     const today=todayISO(),ws=getWeekStart(),ms=getMonthStart();
-    const [ent,sai,est,comp,fut,cmv,cfg,ment,msai,mcomp]=await Promise.all([
+    const [ent,sai,est,comp,fut,cmv,cfg,ment,msai,mcomp,motoboys]=await Promise.all([
       dbGet('entradas',`data=eq.${today}&order=created_at.desc`),
       dbGet('saidas',`data=eq.${today}&order=created_at.desc`),
       dbGet('estoque',`order=nome.asc&limit=1000`),
@@ -707,9 +726,11 @@ async function loadAll(){
       dbGet('entradas',`data=gte.${ms}&order=created_at.desc`),
       dbGet('saidas',`data=gte.${ms}&order=created_at.desc`),
       dbGet('compras',`data=gte.${ms}&order=created_at.desc`),
+      dbGet('motoboys',`data=gte.${ms}&order=data.asc`).catch(()=>[]),
     ]);
     state.entradas=ent;state.saidas=sai;
     state.monthEntradas=ment;state.monthSaidas=msai;state.monthCompras=mcomp;
+    state.motoboys=motoboys||[];
     state.estoque=est.length>0?est:await dbPost('estoque',ESTOQUE_INICIAL).then(()=>dbGet('estoque','order=nome.asc')).catch(()=>ESTOQUE_INICIAL);
     state.compras=comp;
     state.futuras=fut.length>0?fut:await dbPost('futuras',FUTURAS_INICIAL).then(()=>dbGet('futuras','order=vencimento.asc')).catch(()=>FUTURAS_INICIAL);
@@ -745,7 +766,7 @@ async function initRealtime(){
     try{
       const today=todayISO(),ws=getWeekStart();
       const ms2=getMonthStart();
-      const [ent,sai,fut,comp,ment2,msai2,mcomp2]=await Promise.all([
+      const [ent,sai,fut,comp,ment2,msai2,mcomp2,mb2]=await Promise.all([
         dbGet('entradas',`data=eq.${today}&order=created_at.desc`),
         dbGet('saidas',`data=eq.${today}&order=created_at.desc`),
         dbGet('futuras',`order=vencimento.asc`),
@@ -753,9 +774,11 @@ async function initRealtime(){
         dbGet('entradas',`data=gte.${ms2}&order=created_at.desc`),
         dbGet('saidas',`data=gte.${ms2}&order=created_at.desc`),
         dbGet('compras',`data=gte.${ms2}&order=created_at.desc`),
+        dbGet('motoboys',`data=gte.${ms2}&order=data.asc`).catch(()=>[]),
       ]);
       state.entradas=ent;state.saidas=sai;state.futuras=fut;state.compras=comp;
       state.monthEntradas=ment2;state.monthSaidas=msai2;state.monthCompras=mcomp2;
+      state.motoboys=mb2||[];
       updateAll();
     }catch(e){}
   },15000);
@@ -1028,34 +1051,85 @@ function updateMesCards(){
 function renderPizzaRanking(){
   const el=document.getElementById('pizzaRanking');if(!el)return;
   const pedidos=state.cwAllPedidos||[];
-  if(pedidos.length===0){el.innerHTML='<div style="color:var(--muted);font-size:0.8rem;font-weight:600;text-align:center;padding:20px">Sincronize o Cardápio Web para ver o ranking 🍕</div>';return;}
-  // Conta itens vendidos
-  const contagem={};
+  if(pedidos.length===0){
+    el.innerHTML='<div style="color:var(--muted);font-size:0.8rem;font-weight:600;text-align:center;padding:20px">Sincronize o Cardápio Web para ver o ranking 🍕</div>';
+    return;
+  }
+
+  // Contagem de sabores (via options) e produtos simples
+  const contagemSabores={};
+  const contagemProdutos={};
+
   pedidos.forEach(p=>{
-    const items=p.items||p.order_items||[];
+    const items=p.items||[];
     items.forEach(item=>{
-      const nome=item.name||item.product_name||item.title||'Item';
-      const qtd=parseInt(item.quantity||item.qty||1);
-      contagem[nome]=(contagem[nome]||0)+qtd;
+      const nomeItem=(item.name||'').toUpperCase();
+      const qtd=parseInt(item.quantity||1);
+      const opts=item.options||[];
+
+      // Verifica se tem grupo de sabores
+      const optsSabores=opts.filter(o=>{
+        const grp=(o.option_group_name||'').toLowerCase();
+        return grp.includes('sabor')||grp.includes('escolha')||grp.includes('recheio')||grp.includes('meio');
+      });
+
+      if(optsSabores.length>0){
+        // Conta cada sabor individualmente
+        optsSabores.forEach(o=>{
+          const sabor=(o.name||'').trim();
+          if(sabor) contagemSabores[sabor]=(contagemSabores[sabor]||0)+(o.quantity||1);
+        });
+      } else {
+        // Produto simples (não é pizza meio a meio)
+        const nome=(item.name||'Item').trim();
+        contagemProdutos[nome]=(contagemProdutos[nome]||0)+qtd;
+      }
     });
   });
-  const ranking=Object.entries(contagem).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  if(ranking.length===0){el.innerHTML='<div style="color:var(--muted);font-size:0.8rem;text-align:center;padding:20px">Nenhum item encontrado nos pedidos</div>';return;}
-  const maxQtd=ranking[0][1];
+
+  // Monta ranking: sabores primeiro, depois produtos
+  const todosSabores=Object.entries(contagemSabores).sort((a,b)=>b[1]-a[1]);
+  const todosProdutos=Object.entries(contagemProdutos).sort((a,b)=>b[1]-a[1]);
+
+  // Top 5 sabores de pizza
+  const topSabores=todosSabores.slice(0,5);
+  // Top 5 produtos
+  const topProdutos=todosProdutos.slice(0,5);
+
   const medals=['🥇','🥈','🥉','4️⃣','5️⃣'];
-  el.innerHTML=ranking.map(([nome,qtd],i)=>{
-    const pct=Math.round(qtd/maxQtd*100);
-    return`<div style="display:flex;align-items:center;gap:12px">
-      <span style="font-size:1.2rem;width:28px">${medals[i]}</span>
-      <div style="flex:1">
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-          <span style="font-size:0.82rem;font-weight:700;color:var(--text)">${nome}</span>
-          <span style="font-size:0.8rem;font-weight:800;color:var(--yellow)">${qtd}x</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${i===0?'var(--yellow)':i===1?'#aaa':'var(--muted)'}"></div></div>
-      </div>
-    </div>`;
-  }).join('');
+
+  const renderLista=(lista,titulo,cor)=>{
+    if(lista.length===0) return '';
+    const maxQ=lista[0][1];
+    return`
+      <div style="font-size:0.7rem;font-weight:800;color:${cor};text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;margin-top:4px">${titulo}</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+        ${lista.map(([nome,qtd],i)=>{
+          const pct=Math.round(qtd/maxQ*100);
+          const barCor=i===0?cor:i===1?cor+'cc':cor+'88';
+          return`<div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:1rem;min-width:24px">${medals[i]}</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+                <span style="font-size:0.82rem;font-weight:700;color:var(--text)">${nome}</span>
+                <span style="font-size:0.78rem;font-weight:800;color:${cor};background:${cor}22;padding:2px 8px;border-radius:10px">${qtd}x</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${barCor}"></div></div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  };
+
+  const htmlSabores=renderLista(topSabores,'🍕 Top Sabores — Meio a Meio','#FFB800');
+  const htmlProdutos=renderLista(topProdutos,'📦 Top Produtos','#00C87A');
+
+  if(!htmlSabores && !htmlProdutos){
+    el.innerHTML='<div style="color:var(--muted);font-size:0.8rem;text-align:center;padding:20px">Nenhum item encontrado nos pedidos</div>';
+    return;
+  }
+
+  el.innerHTML=htmlSabores+htmlProdutos;
 }
 
 function renderHomeCharts(){
@@ -1289,6 +1363,153 @@ async function limparERestarurar(){
   }catch(e){el.innerHTML=`<div class="alert alert-warn">❌ Erro: ${e.message}</div>`;}
 }
 
+
+// ── MOTOBOYS ──────────────────────────────────────────────────────────────
+const MB_NOMES=['Raphael','Igor','Samuel','Luiz'];
+const MB_CORES=['#FFB800','#3B82F6','#00C87A','#FF4D00'];
+
+async function addEntregaMB(){
+  const nome=document.getElementById('mbNome').value;
+  const taxa=parseFloat(document.getElementById('mbTaxa').value)||0;
+  const diaria=parseFloat(document.getElementById('mbDiaria').value)||0;
+  const data=document.getElementById('mbData').value||todayISO();
+  const obs=document.getElementById('mbObs').value||'';
+  if(!taxa&&!diaria)return alert('Informe a taxa da entrega ou a diária');
+  const total=taxa+diaria;
+  const rec=await dbPost('motoboys',[{nome,taxa,diaria,total,data,obs}]);
+  state.motoboys.push(rec[0]);
+  document.getElementById('mbTaxa').value='';
+  document.getElementById('mbDiaria').value='';
+  document.getElementById('mbObs').value='';
+  renderMotoboys();
+}
+
+async function delEntregaMB(id){
+  await dbDelete('motoboys',id);
+  state.motoboys=state.motoboys.filter(m=>m.id!==id);
+  renderMotoboys();
+}
+
+function renderMotoboys(){
+  const filtro=document.getElementById('mbFiltro')?.value||'';
+  const lista=filtro?state.motoboys.filter(m=>m.nome===filtro):state.motoboys;
+
+  // Cards resumo
+  const totalMes=state.motoboys.reduce((s,m)=>s+(parseFloat(m.total)||0),0);
+  const totalEntregas=state.motoboys.filter(m=>parseFloat(m.taxa||0)>0).length;
+  const diasSet=new Set(state.motoboys.map(m=>m.data));
+  const custoEntrega=totalEntregas>0?totalMes/totalEntregas:0;
+  if(document.getElementById('mbTotalMes'))document.getElementById('mbTotalMes').textContent=fmt(totalMes);
+  if(document.getElementById('mbTotalEntregas'))document.getElementById('mbTotalEntregas').textContent=totalEntregas;
+  if(document.getElementById('mbDiasTrabalhados'))document.getElementById('mbDiasTrabalhados').textContent=`${diasSet.size} / 30`;
+  if(document.getElementById('mbCustoEntrega'))document.getElementById('mbCustoEntrega').textContent=fmt(custoEntrega);
+
+  // Tabela
+  const tbl=document.getElementById('tblMotoboys');
+  if(tbl){
+    tbl.innerHTML=lista.length>0?[...lista].reverse().map(m=>`
+      <tr>
+        <td>${m.data}</td>
+        <td><span class="badge" style="background:${MB_CORES[MB_NOMES.indexOf(m.nome)]}22;color:${MB_CORES[MB_NOMES.indexOf(m.nome)]}">${m.nome}</span></td>
+        <td style="color:var(--yellow)">${fmt(m.diaria||0)}</td>
+        <td style="color:var(--blue)">${fmt(m.taxa||0)}</td>
+        <td style="font-weight:800;color:var(--red)">${fmt(m.total||0)}</td>
+        <td style="color:var(--muted);font-size:0.75rem">${m.obs||'—'}</td>
+        <td><button class="edit-btn" onclick="delEntregaMB(${m.id})">🗑</button></td>
+      </tr>`).join('')
+    :'<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:20px">Nenhum lançamento</td></tr>';
+  }
+
+  // Resumo por nome
+  const resumoEl=document.getElementById('mbResumoNomes');
+  if(resumoEl){
+    resumoEl.innerHTML=MB_NOMES.map((nome,i)=>{
+      const regs=state.motoboys.filter(m=>m.nome===nome);
+      const tot=regs.reduce((s,m)=>s+(parseFloat(m.total)||0),0);
+      const entregas=regs.filter(m=>parseFloat(m.taxa||0)>0).length;
+      const diarias=regs.filter(m=>parseFloat(m.diaria||0)>0).length;
+      return`<div class="card" style="flex:1;min-width:140px;border-top:3px solid ${MB_CORES[i]}">
+        <div style="font-size:0.7rem;font-weight:800;color:${MB_CORES[i]};margin-bottom:6px">${nome}</div>
+        <div style="font-size:1.1rem;font-weight:900;color:var(--red)">${fmt(tot)}</div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:4px">${entregas} entregas · ${diarias} diárias</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Gráficos individuais
+  renderMBCharts();
+}
+
+function renderMBCharts(){
+  // Gráfico geral — total por motoboy
+  dc('mbTotal');
+  const elT=document.getElementById('chartMBTotal');
+  if(elT){
+    const totais=MB_NOMES.map(n=>state.motoboys.filter(m=>m.nome===n).reduce((s,m)=>s+(parseFloat(m.total)||0),0));
+    charts['mbTotal']=new Chart(elT,{
+      type:'bar',
+      data:{
+        labels:MB_NOMES,
+        datasets:[
+          {label:'Diárias',data:MB_NOMES.map(n=>state.motoboys.filter(m=>m.nome===n).reduce((s,m)=>s+(parseFloat(m.diaria)||0),0)),backgroundColor:MB_CORES.map(c=>c+'88'),borderColor:MB_CORES,borderWidth:2,borderRadius:6},
+          {label:'Taxas',data:MB_NOMES.map(n=>state.motoboys.filter(m=>m.nome===n).reduce((s,m)=>s+(parseFloat(m.taxa)||0),0)),backgroundColor:MB_CORES.map(c=>c+'44'),borderColor:MB_CORES,borderWidth:2,borderRadius:6,borderDash:[4,4]},
+        ]
+      },
+      options:{...chartDefaults,scales:{...chartDefaults.scales,y:{...chartDefaults.scales.y,callback:v=>'R$'+v.toLocaleString('pt-BR')},x:{ticks:{color:'#888'},grid:{color:'#2a2a2a'}}}}
+    });
+  }
+
+  // Gráfico individual por motoboy — acumulado diário
+  MB_NOMES.forEach((nome,i)=>{
+    dc('mb_'+nome);
+    const el=document.getElementById('chartMB_'+nome);
+    if(!el)return;
+    const regs=state.motoboys.filter(m=>m.nome===nome).sort((a,b)=>a.data.localeCompare(b.data));
+    // Agrupa por dia
+    const porDia={};
+    regs.forEach(m=>{
+      const d=m.data;
+      if(!porDia[d])porDia[d]={diaria:0,taxa:0};
+      porDia[d].diaria+=(parseFloat(m.diaria)||0);
+      porDia[d].taxa+=(parseFloat(m.taxa)||0);
+    });
+    const dias=Object.keys(porDia).sort();
+    const cor=MB_CORES[i];
+    charts['mb_'+nome]=new Chart(el,{
+      type:'bar',
+      data:{
+        labels:dias.map(d=>{const p=d.split('-');return`${p[2]}/${p[1]}`;}),
+        datasets:[
+          {label:'Diária',data:dias.map(d=>porDia[d].diaria),backgroundColor:cor+'99',borderColor:cor,borderWidth:2,borderRadius:4},
+          {label:'Taxas',data:dias.map(d=>porDia[d].taxa),backgroundColor:cor+'44',borderColor:cor,borderWidth:1,borderRadius:4},
+        ]
+      },
+      options:{...chartDefaults,plugins:{...chartDefaults.plugins,legend:{display:true,labels:{color:'#888',font:{size:10}}}},scales:{...chartDefaults.scales,y:{...chartDefaults.scales.y,callback:v=>'R$'+v.toLocaleString('pt-BR')},x:{ticks:{color:'#888',font:{size:10}},grid:{color:'#2a2a2a'}}}}
+    });
+    // Mini resumo
+    const cardEl=document.getElementById('cardMB_'+nome);
+    if(cardEl){
+      const tot=regs.reduce((s,m)=>s+(parseFloat(m.total)||0),0);
+      const entregas=regs.filter(m=>parseFloat(m.taxa||0)>0).length;
+      const diarias=regs.filter(m=>parseFloat(m.diaria||0)>0).length;
+      cardEl.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div style="flex:1;background:var(--card2);border-radius:10px;padding:8px;text-align:center">
+          <div style="font-size:0.65rem;color:var(--muted);font-weight:700">TOTAL MÊS</div>
+          <div style="font-size:1rem;font-weight:900;color:${cor}">${fmt(tot)}</div>
+        </div>
+        <div style="flex:1;background:var(--card2);border-radius:10px;padding:8px;text-align:center">
+          <div style="font-size:0.65rem;color:var(--muted);font-weight:700">ENTREGAS</div>
+          <div style="font-size:1rem;font-weight:900;color:var(--text)">${entregas}</div>
+        </div>
+        <div style="flex:1;background:var(--card2);border-radius:10px;padding:8px;text-align:center">
+          <div style="font-size:0.65rem;color:var(--muted);font-weight:700">DIÁRIAS</div>
+          <div style="font-size:1rem;font-weight:900;color:var(--text)">${diarias}</div>
+        </div>
+      </div>`;
+    }
+  });
+}
+
 async function addEstoque(){const nome=document.getElementById('novoProduto').value;if(!nome)return alert('Informe o nome');const rec=await dbPost('estoque',[{nome,qtd:parseFloat(document.getElementById('novaQtd').value)||0,unidade:document.getElementById('novaUnidade').value||'un',custo:parseFloat(document.getElementById('novoCusto').value)||0}]);state.estoque.push(rec[0]);['novoProduto','novaQtd','novaUnidade','novoCusto'].forEach(id=>document.getElementById(id).value='');updateAll();}
 async function addCompra(){const v=parseFloat(document.getElementById('compValor').value);if(!v||v<=0)return alert('Informe um valor válido');const rec=await dbPost('compras',[{fornecedor:document.getElementById('compFornecedor').value,valor:v,data:document.getElementById('compData').value||todayISO(),descricao:document.getElementById('compDesc').value,status:document.getElementById('compStatus').value,pagamento:document.getElementById('compPagamento').value}]);state.compras.unshift(rec[0]);['compFornecedor','compValor','compDesc'].forEach(id=>document.getElementById(id).value='');updateAll();}
 async function addFutura(){
@@ -1315,7 +1536,92 @@ async function pagarConta(id){
 }
 async function pagarCompra(id){await dbPatch('compras',id,{status:'pago'});const c=state.compras.find(c=>c.id===id);if(c)c.status='pago';updateAll();}
 
-async function fecharSemana(){const ef=parseFloat(document.getElementById('estoqueFinVal').value);if(isNaN(ef))return alert('Informe o valor do estoque final');const r=calcReceita(),cmv=Math.max(0,(state.estoqueInicialSemana||0)+calcCompras()-ef),pct=r>0?cmv/r*100:0;const rec=await dbPost('cmv_historico',[{semana:`Semana ${todayS()}`,receita:r,cmv,pct}]);state.cmvHistorico.unshift(rec[0]);state.estoqueInicialSemana=ef;await fetch(`${SB_URL}/rest/v1/config?chave=eq.estoque_inicial_semana`,{method:'PATCH',headers:hdrs,body:JSON.stringify({valor:String(ef)})}).catch(()=>dbPost('config',[{chave:'estoque_inicial_semana',valor:String(ef)}]));document.getElementById('estoqueFinVal').value='';alert(`✅ Semana fechada!\nCMV: R$ ${cmv.toFixed(2)} (${pct.toFixed(1)}%)`);updateAll();}
+function abrirFechamento(){
+  // Pré-preenche com estoque atual
+  const lista=state.estoque.filter(i=>parseFloat(i.qtd||0)>0||parseFloat(i.custo||0)>0);
+  const tbl=document.getElementById('tblFechamento');
+  if(!tbl)return;
+  tbl.innerHTML=lista.map((item,idx)=>{
+    const qtdAtual=parseFloat(item.qtd||0);
+    const custo=parseFloat(item.custo||0);
+    const total=(qtdAtual*custo).toFixed(2);
+    return`<tr>
+      <td style="font-weight:600">${item.nome}</td>
+      <td style="color:var(--muted)">${item.unidade||'un'}</td>
+      <td style="color:var(--muted)">${qtdAtual}</td>
+      <td><input type="number" id="fech_qtd_${item.id}" value="${qtdAtual}" step="0.01" min="0"
+        oninput="atualizarLinheFechamento(${item.id},${custo})"
+        style="background:var(--card2);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:8px;width:90px;font-family:Nunito,sans-serif;font-weight:700"></td>
+      <td style="color:var(--muted)">${fmt(custo)}</td>
+      <td id="fech_total_${item.id}" style="color:var(--yellow);font-weight:800">${fmt(parseFloat(total))}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('fechamentoLista').style.display='block';
+  recalcFechamento();
+}
+
+function atualizarLinheFechamento(id, custo){
+  const qtdEl=document.getElementById(`fech_qtd_${id}`);
+  const totalEl=document.getElementById(`fech_total_${id}`);
+  if(!qtdEl||!totalEl)return;
+  const qtd=parseFloat(qtdEl.value)||0;
+  totalEl.textContent=fmt(qtd*custo);
+  recalcFechamento();
+}
+
+function recalcFechamento(){
+  // Soma todos os totais da tabela
+  const lista=state.estoque.filter(i=>parseFloat(i.qtd||0)>0||parseFloat(i.custo||0)>0);
+  let total=0;
+  lista.forEach(item=>{
+    const qtdEl=document.getElementById(`fech_qtd_${item.id}`);
+    const qtd=qtdEl?parseFloat(qtdEl.value)||0:parseFloat(item.qtd||0);
+    total+=qtd*(parseFloat(item.custo)||0);
+  });
+  const el=document.getElementById('fechamentoTotal');
+  if(el)el.textContent=fmt(total);
+  return total;
+}
+
+async function fecharSemana(){
+  // Lê o valor final da lista de fechamento (ou campo antigo se existir)
+  let ef=0;
+  const listaVisible=document.getElementById('fechamentoLista')?.style.display!=='none';
+  if(listaVisible){
+    ef=recalcFechamento();
+  } else {
+    const inp=document.getElementById('estoqueFinVal');
+    ef=inp?parseFloat(inp.value)||0:0;
+    if(ef===0)return alert('Prepare a lista de fechamento primeiro');
+  }
+
+  if(!confirm(`Confirmar fechamento?\nEstoque final: ${fmt(ef)}\n\nEssa ação registra o CMV da semana.`))return;
+
+  // Atualiza qtd dos itens no banco com os valores ajustados
+  const lista=state.estoque.filter(i=>parseFloat(i.qtd||0)>0||parseFloat(i.custo||0)>0);
+  if(listaVisible){
+    for(const item of lista){
+      const qtdEl=document.getElementById(`fech_qtd_${item.id}`);
+      if(!qtdEl)continue;
+      const novaQtd=parseFloat(qtdEl.value)||0;
+      if(novaQtd!==parseFloat(item.qtd||0)){
+        await dbPatch('estoque',item.id,{qtd:novaQtd});
+        item.qtd=novaQtd;
+      }
+    }
+  }
+
+  const r=calcReceita();
+  const cmv=Math.max(0,(state.estoqueInicialSemana||0)+calcCompras()-ef);
+  const pct=r>0?cmv/r*100:0;
+  const rec=await dbPost('cmv_historico',[{semana:`Semana ${todayS()}`,receita:r,cmv,pct}]);
+  state.cmvHistorico.unshift(rec[0]);
+  state.estoqueInicialSemana=ef;
+  await fetch(`${SB_URL}/rest/v1/config?chave=eq.estoque_inicial_semana`,{method:'PATCH',headers:hdrs,body:JSON.stringify({valor:String(ef)})}).catch(()=>dbPost('config',[{chave:'estoque_inicial_semana',valor:String(ef)}]));
+  if(document.getElementById('fechamentoLista'))document.getElementById('fechamentoLista').style.display='none';
+  alert(`✅ Semana fechada!\nEstoque Final: ${fmt(ef)}\nCMV: ${fmt(cmv)} (${pct.toFixed(1)}%)`);
+  updateAll();
+}
 
 // MP SYNC — via proxy Supabase (evita CORS do browser)
 async function syncMP(){
@@ -1412,6 +1718,7 @@ function showPage(id,el){
   document.getElementById('page-'+id).classList.add('active');
   el.classList.add('active');
   if(id==='overview'){setTimeout(()=>{renderHomeCharts();renderAcumulado();},100);}
+  if(id==='motoboys'){setTimeout(()=>renderMotoboys(),100);}
   if(id==='graficos')renderGraficos();
   if(id==='cmv'){renderCMVChart();setTimeout(renderCMVChart,200);}
   if(id==='variaveis')renderFinanceiroChart();
@@ -1423,5 +1730,87 @@ loadAll();
 setTimeout(syncCW,5000);
 setInterval(syncCW,2*60000);
 </script>
+
+<!-- MOTOBOYS -->
+<div id="page-motoboys" class="page">
+
+  <!-- CARDS RESUMO -->
+  <div class="cards">
+    <div class="card red"><div class="card-icon">🛵</div><div class="card-label">Total Gasto Mês</div><div class="card-val red" id="mbTotalMes">R$ 0,00</div><div class="card-sub">Diárias + Taxas</div></div>
+    <div class="card yellow"><div class="card-icon">📦</div><div class="card-label">Total Entregas</div><div class="card-val yellow" id="mbTotalEntregas">0</div><div class="card-sub">No mês</div></div>
+    <div class="card blue"><div class="card-icon">📅</div><div class="card-label">Dias Trabalhados</div><div class="card-val" id="mbDiasTrabalhados">0 / 30</div></div>
+    <div class="card green"><div class="card-icon">💰</div><div class="card-label">Custo por Entrega</div><div class="card-val green" id="mbCustoEntrega">R$ 0,00</div></div>
+  </div>
+
+  <!-- LANÇAR ENTREGA -->
+  <div class="section">
+    <div class="section-title"><span class="icon">➕</span> Lançar Entrega</div>
+    <div class="form-row">
+      <select id="mbNome">
+        <option value="Raphael">Raphael</option>
+        <option value="Igor">Igor</option>
+        <option value="Samuel">Samuel</option>
+        <option value="Luiz">Luiz</option>
+      </select>
+      <input type="number" id="mbTaxa" placeholder="Taxa da entrega (R$)" step="0.01" min="0">
+      <input type="number" id="mbDiaria" placeholder="Diária (R$)" step="0.01" min="0">
+      <input type="date" id="mbData">
+      <input type="text" id="mbObs" placeholder="Observação (opcional)">
+      <button class="btn btn-yellow" onclick="addEntregaMB()">+ Lançar</button>
+    </div>
+    <p style="font-size:0.72rem;color:var(--muted);font-weight:600;margin-top:4px">💡 Diária só precisa ser lançada uma vez por dia por motoboy. Taxa é por entrega individual.</p>
+  </div>
+
+  <!-- GRÁFICOS POR MOTOBOY -->
+  <div class="section">
+    <div class="section-title"><span class="icon">📊</span> Custo Total por Motoboy — Mês</div>
+    <div style="position:relative;height:260px;"><canvas id="chartMBTotal" role="img" aria-label="Custo por motoboy"></canvas></div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="section">
+      <div class="section-title"><span class="icon">🛵</span> Raphael</div>
+      <div style="position:relative;height:200px;"><canvas id="chartMB_Raphael" role="img"></canvas></div>
+      <div id="cardMB_Raphael" style="margin-top:10px"></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="icon">🛵</span> Igor</div>
+      <div style="position:relative;height:200px;"><canvas id="chartMB_Igor" role="img"></canvas></div>
+      <div id="cardMB_Igor" style="margin-top:10px"></div>
+    </div>
+  </div>
+  <div class="chart-grid">
+    <div class="section">
+      <div class="section-title"><span class="icon">🛵</span> Samuel</div>
+      <div style="position:relative;height:200px;"><canvas id="chartMB_Samuel" role="img"></canvas></div>
+      <div id="cardMB_Samuel" style="margin-top:10px"></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="icon">🛵</span> Luiz</div>
+      <div style="position:relative;height:200px;"><canvas id="chartMB_Luiz" role="img"></canvas></div>
+      <div id="cardMB_Luiz" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- TABELA HISTÓRICO -->
+  <div class="section">
+    <div class="section-title"><span class="icon">📋</span> Histórico do Mês</div>
+    <div class="form-row" style="margin-bottom:8px">
+      <select id="mbFiltro" onchange="renderMotoboys()">
+        <option value="">Todos os motoboys</option>
+        <option value="Raphael">Raphael</option>
+        <option value="Igor">Igor</option>
+        <option value="Samuel">Samuel</option>
+        <option value="Luiz">Luiz</option>
+      </select>
+    </div>
+    <div class="scrolltable">
+      <table><thead><tr><th>Data</th><th>Motoboy</th><th>Diária</th><th>Taxa Entrega</th><th>Total</th><th>Obs</th><th></th></tr></thead>
+      <tbody id="tblMotoboys"></tbody></table>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap" id="mbResumoNomes"></div>
+  </div>
+</div>
+
 </body>
 </html>
