@@ -291,19 +291,7 @@ tr:hover td{background:#ffffff08;}
     <div id="mp-result" style="margin-top:10px"></div>
   </div>
 
-  <!-- CONTAS A PAGAR RESUMIDAS NA ABA ENTRADAS -->
-  <div class="section">
-    <div class="section-title"><span class="icon">⚠️</span> Contas a Pagar — Resumo</div>
-    <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:12px">
-      <div class="card red"><div class="card-icon">💸</div><div class="card-label">Total a Pagar</div><div class="card-val red" id="entAPagarTotal">R$ 0,00</div></div>
-      <div class="card red"><div class="card-icon">🔥</div><div class="card-label">Vence em 7 dias</div><div class="card-val red" id="entAPagar7d">R$ 0,00</div></div>
-      <div class="card yellow"><div class="card-icon">📅</div><div class="card-label">Vence este mês</div><div class="card-val yellow" id="entAPagarMes">R$ 0,00</div></div>
-    </div>
-    <div class="scrolltable">
-      <table><thead><tr><th>Vencimento</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Status</th></tr></thead>
-      <tbody id="tblEntAPagar"></tbody></table>
-    </div>
-  </div>
+
   <div class="section">
     <div class="section-title"><span class="icon">➕</span> Nova Entrada Manual</div>
     <div class="form-row">
@@ -331,31 +319,51 @@ tr:hover td{background:#ffffff08;}
 
 <!-- SAÍDAS -->
 <div id="page-saidas" class="page">
-  <div class="section">
-    <div class="section-title"><span class="icon">🏦</span> Mercado Pago — Movimentações</div>
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-      <button class="btn btn-blue" onclick="syncMPMovimentacoes()">🔄 Sincronizar Saídas MP</button>
-      <span style="font-size:0.75rem;color:var(--muted);font-weight:600">Taxas, Pix e pagamentos do saldo MP</span>
+
+  <!-- CARDS RESUMO -->
+  <div class="cards">
+    <div class="card red"><div class="card-icon">📉</div><div class="card-label">Saídas Hoje</div><div class="card-val red" id="saidasHojeS">R$ 0,00</div></div>
+    <div class="card red"><div class="card-icon">📅</div><div class="card-label">Saídas Mês</div><div class="card-val red" id="saidasMesS">R$ 0,00</div></div>
+    <div class="card yellow"><div class="card-icon">💳</div><div class="card-label">Pagamentos MP</div><div class="card-val yellow" id="totMPPag">R$ 0,00</div></div>
+    <div class="card yellow"><div class="card-icon">🏷️</div><div class="card-label">Taxas MP</div><div class="card-val yellow" id="totMPTaxa">R$ 0,00</div></div>
+    <div class="card yellow"><div class="card-icon">📲</div><div class="card-label">Pix MP</div><div class="card-val yellow" id="totMPPix">R$ 0,00</div></div>
+  </div>
+
+  <!-- LANÇAR + GRÁFICO LADO A LADO -->
+  <div class="chart-grid">
+    <div class="section">
+      <div class="section-title"><span class="icon">➖</span> Nova Saída</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <select id="saiCat" onchange="renderSaidasChart()">
+          <option>Fornecedor</option><option>Aluguel</option><option>Energia</option>
+          <option>Água</option><option>Funcionário</option><option>Embalagem</option>
+          <option>Manutenção</option><option>Taxa MP</option><option>Pix/Transferência MP</option>
+          <option>Pagamento MP</option><option>Motoboy</option><option>Marketing</option>
+          <option>Gás</option><option>Gasolina</option><option>Outro</option>
+        </select>
+        <input type="text" id="saiDestinatario" placeholder="Destinatário (ex: Fornecedor João)" style="background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:12px;font-size:0.82rem;font-family:'Nunito',sans-serif;">
+        <input type="number" id="saiValor" placeholder="Valor (R$)" step="0.01" min="0" style="background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:12px;font-size:0.82rem;font-family:'Nunito',sans-serif;">
+        <input type="text" id="saiDesc" placeholder="Descrição / obs" style="background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:12px;font-size:0.82rem;font-family:'Nunito',sans-serif;">
+        <button class="btn btn-red" onclick="addSaida()" style="width:100%">− Lançar Saída</button>
+      </div>
+      <!-- ÚLTIMAS SAÍDAS -->
+      <div style="margin-top:16px">
+        <div style="font-size:0.7rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Últimas saídas</div>
+        <div id="listUltimasSaidas"></div>
+      </div>
     </div>
-    <div class="cards">
-      <div class="card red"><div class="card-icon">💳</div><div class="card-label">Pagamentos Realizados</div><div class="card-val red" id="totMPPag">R$ 0,00</div><div class="card-sub">Pagamentos pelo saldo</div></div>
-      <div class="card red"><div class="card-icon">🏷️</div><div class="card-label">Taxas de Recebimento</div><div class="card-val red" id="totMPTaxa">R$ 0,00</div><div class="card-sub">Tarifas cobradas</div></div>
-      <div class="card red"><div class="card-icon">📲</div><div class="card-label">Pix p/ Terceiros</div><div class="card-val red" id="totMPPix">R$ 0,00</div><div class="card-sub">Transferências enviadas</div></div>
+    <div class="section">
+      <div class="section-title"><span class="icon">🥧</span> Saídas por Destinatário — Hoje</div>
+      <div style="position:relative;height:280px;"><canvas id="chartSaidasDest" role="img" aria-label="Saídas por destinatário"></canvas></div>
+      <div id="legendaSaidas" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px"></div>
     </div>
   </div>
-  <div class="section">
-    <div class="section-title"><span class="icon">➖</span> Nova Saída Manual</div>
-    <div class="form-row">
-      <select id="saiCat"><option>Fornecedor</option><option>Aluguel</option><option>Energia</option><option>Água</option><option>Funcionário</option><option>Embalagem</option><option>Manutenção</option><option>Taxa MP</option><option>Pix/Transferência MP</option><option>Pagamento MP</option><option>Outro</option></select>
-      <input type="number" id="saiValor" placeholder="Valor (R$)" step="0.01" min="0">
-      <input type="text" id="saiDesc" placeholder="Descrição">
-      <button class="btn btn-red" onclick="addSaida()">- Lançar</button>
-    </div>
-  </div>
+
+  <!-- TABELA COMPLETA -->
   <div class="section">
     <div class="section-title"><span class="icon">📋</span> Saídas de Hoje</div>
     <div class="scrolltable">
-      <table><thead><tr><th>Hora</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th></th></tr></thead>
+      <table><thead><tr><th>Hora</th><th>Categoria</th><th>Destinatário</th><th>Descrição</th><th>Valor</th><th></th></tr></thead>
       <tbody id="tblSaidas"></tbody></table>
     </div>
   </div>
@@ -445,23 +453,69 @@ tr:hover td{background:#ffffff08;}
   </div>
 </div>
 
-<!-- CUSTOS VARIÁVEIS -->
+<!-- CUSTOS -->
 <div id="page-variaveis" class="page">
+
+  <!-- RESUMO CARDS -->
   <div class="cards">
+    <div class="card red"><div class="card-icon">🔒</div><div class="card-label">Fixos Mês</div><div class="card-val red" id="custoFixoTotal">R$ 0,00</div><div class="card-sub">Recorrentes</div></div>
+    <div class="card red"><div class="card-icon">📊</div><div class="card-label">Variáveis Hoje</div><div class="card-val red" id="varTotal">R$ 0,00</div><div class="card-sub">Impostos + taxas</div></div>
     <div class="card red"><div class="card-icon">🏛️</div><div class="card-label">Imposto (7%)</div><div class="card-val red" id="varImposto">R$ 0,00</div><div class="card-sub">Vence dia 20</div></div>
     <div class="card red"><div class="card-icon">🛵</div><div class="card-label">Taxa iFood (18%)</div><div class="card-val red" id="varIfood">R$ 0,00</div></div>
     <div class="card red"><div class="card-icon">💳</div><div class="card-label">Maquininha (3%)</div><div class="card-val red" id="varMaquina">R$ 0,00</div></div>
-    <div class="card red"><div class="card-icon">💸</div><div class="card-label">Total Variáveis</div><div class="card-val red" id="varTotal">R$ 0,00</div></div>
+    <div class="card green"><div class="card-icon">🏆</div><div class="card-label">Lucro Estimado</div><div class="card-val" id="resumoLucro">R$ 0,00</div></div>
   </div>
-  <div class="section">
-    <div class="section-title"><span class="icon">💡</span> Resumo Financeiro Real</div>
-    <div class="cards">
-      <div class="card green"><div class="card-icon">📈</div><div class="card-label">Receita Bruta</div><div class="card-val green" id="resumoBruto">R$ 0,00</div></div>
-      <div class="card red"><div class="card-icon">🔒</div><div class="card-label">Custos Fixos</div><div class="card-val red" id="resumoFixos">R$ 0,00</div></div>
-      <div class="card red"><div class="card-icon">📊</div><div class="card-label">Custos Variáveis</div><div class="card-val red" id="resumoVariaveis">R$ 0,00</div></div>
-      <div class="card green"><div class="card-icon">🏆</div><div class="card-label">Lucro Estimado</div><div class="card-val" id="resumoLucro">R$ 0,00</div></div>
+
+  <!-- TABS FIXOS / VARIÁVEIS -->
+  <div style="display:flex;gap:0;margin-bottom:16px;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--border)">
+    <button id="tabFixos" onclick="switchCustoTab('fixos')" style="flex:1;padding:12px;border:none;background:var(--yellow);color:#000;font-weight:800;font-family:Nunito,sans-serif;font-size:0.82rem;cursor:pointer">🔒 Custos Fixos</button>
+    <button id="tabVarCusto" onclick="switchCustoTab('var')" style="flex:1;padding:12px;border:none;background:transparent;color:var(--muted);font-weight:800;font-family:Nunito,sans-serif;font-size:0.82rem;cursor:pointer">📊 Variáveis & Resumo</button>
+  </div>
+
+  <!-- ABA FIXOS -->
+  <div id="painelFixos">
+    <div class="section">
+      <div class="section-title"><span class="icon">➕</span> Cadastrar Custo Fixo Recorrente</div>
+      <p style="font-size:0.78rem;color:var(--muted);font-weight:600;margin-bottom:12px">Custos que se repetem todo mês: aluguel, funcionários, sistemas, etc.</p>
+      <div class="form-row">
+        <input type="text" id="cfDesc" placeholder="Descrição (ex: Aluguel)">
+        <input type="number" id="cfValor" placeholder="Valor (R$)" step="0.01" min="0">
+        <select id="cfCat">
+          <option>Aluguel</option><option>Funcionário</option><option>Pró-Labore</option>
+          <option>Energia</option><option>Água</option><option>Gás</option>
+          <option>Sistema</option><option>Marketing</option><option>Contabilidade</option>
+          <option>Segurança</option><option>Jurídico</option><option>Motoboy</option><option>Outro</option>
+        </select>
+        <select id="cfFreq">
+          <option value="mensal">Mensal</option>
+          <option value="semanal">Semanal</option>
+          <option value="diario">Diário</option>
+        </select>
+        <input type="number" id="cfDiaVenc" placeholder="Dia vencimento" min="1" max="31">
+        <button class="btn btn-yellow" onclick="addCustoFixo()">+ Adicionar</button>
+      </div>
     </div>
-    <div style="position:relative;height:250px;margin-top:8px;"><canvas id="chartFinanceiro" role="img" aria-label="Resumo financeiro comparativo"></canvas></div>
+    <div class="section">
+      <div class="section-title"><span class="icon">🔒</span> Rotina de Custos Fixos</div>
+      <div id="tblCustosFixos" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="icon">📊</span> Fixos por Categoria</div>
+      <div style="position:relative;height:220px;"><canvas id="chartFixosCat" role="img"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ABA VARIÁVEIS -->
+  <div id="painelVar" style="display:none">
+    <div class="section">
+      <div class="section-title"><span class="icon">💡</span> Resumo Financeiro Real</div>
+      <div class="cards">
+        <div class="card green"><div class="card-icon">📈</div><div class="card-label">Receita Bruta</div><div class="card-val green" id="resumoBruto">R$ 0,00</div></div>
+        <div class="card red"><div class="card-icon">🔒</div><div class="card-label">Custos Fixos</div><div class="card-val red" id="resumoFixos">R$ 0,00</div></div>
+        <div class="card red"><div class="card-icon">📊</div><div class="card-label">Custos Variáveis</div><div class="card-val red" id="resumoVariaveis">R$ 0,00</div></div>
+      </div>
+      <div style="position:relative;height:250px;margin-top:8px;"><canvas id="chartFinanceiro" role="img" aria-label="Resumo financeiro comparativo"></canvas></div>
+    </div>
   </div>
 </div>
 
@@ -754,7 +808,7 @@ async function loadAll(){
     document.getElementById('dbStatus').style.borderColor='#00C87A55';
     document.getElementById('dbStatus').style.color='#00C87A';
     document.getElementById('loadingOverlay').style.display='none';
-    updateAll();initRealtime();
+    updateAll();initRealtime();loadCustosFixos();
   }catch(e){
     document.getElementById('dbStatus').textContent='● Offline';
     document.getElementById('loadingOverlay').innerHTML=`<div style="color:var(--red);font-size:1rem;font-weight:700">❌ Erro: ${e.message}</div>`;
@@ -858,7 +912,7 @@ function updateAll(){
   if(document.getElementById('ovOutros'))document.getElementById('ovOutros').textContent=fmt(canal('Dinheiro')+canal('Pix')+canal('Outro'));
   renderContasUrgentes();renderEntAPagar();updateMesCards();renderPizzaRanking();renderAcumulado();
   renderWeekGrid();renderAlertas();renderMovimentos();
-  renderEntradas();renderSaidas();renderEstoque();
+  renderEntradas();renderSaidas();renderSaidasChart();renderEstoque();
   renderCompras();renderFuturas();renderCmvHist();
   renderHomeCharts();
 }
@@ -1303,13 +1357,15 @@ async function addEntrada(){
 async function addSaida(){
   const v=parseFloat(document.getElementById('saiValor').value);
   if(!v||v<=0)return alert('Informe um valor válido');
-  const rec=await dbPost('saidas',[{categoria:document.getElementById('saiCat').value,valor:v,descricao:document.getElementById('saiDesc').value,hora:nowT(),data:todayISO()}]);
+  const dest=document.getElementById('saiDestinatario')?.value||'';
+  const rec=await dbPost('saidas',[{categoria:document.getElementById('saiCat').value,valor:v,descricao:document.getElementById('saiDesc').value,destinatario:dest,hora:nowT(),data:todayISO()}]);
   state.saidas.unshift(rec[0]);
   document.getElementById('saiValor').value='';
   document.getElementById('saiDesc').value='';
-  // Recarrega dados do mês imediatamente para refletir nos gráficos
+  if(document.getElementById('saiDestinatario'))document.getElementById('saiDestinatario').value='';
   try{const ms=getMonthStart();const [msai]=await Promise.all([dbGet('saidas',`data=gte.${ms}&order=created_at.desc`)]);state.monthSaidas=msai;}catch(e){}
   updateAll();
+  renderSaidasChart();
 }
 
 async function restaurarEstoque(){
@@ -1363,6 +1419,190 @@ async function limparERestarurar(){
   }catch(e){el.innerHTML=`<div class="alert alert-warn">❌ Erro: ${e.message}</div>`;}
 }
 
+
+
+// ── SAÍDAS CHART ──────────────────────────────────────────────────
+function renderSaidasChart(){
+  // Update summary cards
+  const sHoje=calcSaidas();
+  const sMes=(state.monthSaidas||[]).reduce((s,e)=>s+(parseFloat(e.valor)||0),0);
+  if(document.getElementById('saidasHojeS'))document.getElementById('saidasHojeS').textContent=fmt(sHoje);
+  if(document.getElementById('saidasMesS'))document.getElementById('saidasMesS').textContent=fmt(sMes);
+
+  // Agrupa por destinatário (ou categoria se sem destinatário)
+  const grupos={};
+  state.saidas.forEach(s=>{
+    const key=(s.destinatario&&s.destinatario.trim())?s.destinatario.trim():s.categoria||'Outros';
+    grupos[key]=(grupos[key]||0)+(parseFloat(s.valor)||0);
+  });
+  const labels=Object.keys(grupos);
+  const vals=Object.values(grupos);
+  const cores=['#FF4D00','#FFB800','#3B82F6','#00C87A','#FF6B35','#9333EA','#06B6D4','#F59E0B','#EF4444','#8B5CF6','#10B981','#F97316'];
+
+  dc('saidasDest');
+  const el=document.getElementById('chartSaidasDest');
+  if(el&&labels.length>0){
+    charts['saidasDest']=new Chart(el,{
+      type:'doughnut',
+      data:{
+        labels,
+        datasets:[{data:vals,backgroundColor:cores.slice(0,labels.length).map(c=>c+'cc'),borderColor:cores.slice(0,labels.length),borderWidth:2}]
+      },
+      options:{...chartDefaults,cutout:'55%',plugins:{...chartDefaults.plugins,legend:{display:false}}}
+    });
+    // Legenda customizada
+    const leg=document.getElementById('legendaSaidas');
+    if(leg){
+      leg.innerHTML=labels.map((l,i)=>`
+        <div style="display:flex;align-items:center;gap:5px;font-size:0.72rem;font-weight:700">
+          <span style="width:10px;height:10px;border-radius:50%;background:${cores[i]||'#888'};display:inline-block;flex-shrink:0"></span>
+          <span style="color:var(--text)">${l}</span>
+          <span style="color:${cores[i]||'#888'};margin-left:2px">${fmt(vals[i])}</span>
+        </div>`).join('');
+    }
+  } else if(el){
+    dc('saidasDest');
+    if(document.getElementById('legendaSaidas'))document.getElementById('legendaSaidas').innerHTML='<span style="color:var(--muted);font-size:0.8rem">Nenhuma saída hoje</span>';
+  }
+
+  // Lista últimas saídas
+  const ul=document.getElementById('listUltimasSaidas');
+  if(ul){
+    const lista=state.saidas.slice(0,6);
+    ul.innerHTML=lista.length>0?lista.map(s=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div>
+          <div style="font-size:0.8rem;font-weight:700;color:var(--text)">${s.destinatario||s.categoria||'—'}</div>
+          <div style="font-size:0.68rem;color:var(--muted)">${s.hora||''} · ${s.categoria||''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:0.85rem;font-weight:800;color:var(--red)">−${fmt(s.valor)}</span>
+          <button class="edit-btn" onclick="delSaida(${s.id})">🗑</button>
+        </div>
+      </div>`).join('')
+    :'<div style="color:var(--muted);font-size:0.8rem;padding:12px 0">Nenhuma saída hoje</div>';
+  }
+}
+
+// ── CUSTOS FIXOS ──────────────────────────────────────────────────
+let custosFixos=[];
+
+async function loadCustosFixos(){
+  try{
+    const cf=await dbGet('custos_fixos','order=categoria.asc');
+    custosFixos=cf||[];
+  }catch(e){custosFixos=[];}
+  renderCustosFixos();
+}
+
+async function addCustoFixo(){
+  const desc=document.getElementById('cfDesc').value;
+  const val=parseFloat(document.getElementById('cfValor').value)||0;
+  const cat=document.getElementById('cfCat').value;
+  const freq=document.getElementById('cfFreq').value;
+  const dia=parseInt(document.getElementById('cfDiaVenc').value)||1;
+  if(!desc||!val)return alert('Informe descrição e valor');
+  try{
+    const rec=await dbPost('custos_fixos',[{descricao:desc,valor:val,categoria:cat,frequencia:freq,dia_vencimento:dia,ativo:true}]);
+    custosFixos.push(rec[0]);
+  }catch(e){
+    // tabela pode não existir ainda, salva local
+    custosFixos.push({id:Date.now(),descricao:desc,valor:val,categoria:cat,frequencia:freq,dia_vencimento:dia,ativo:true});
+  }
+  ['cfDesc','cfValor','cfDiaVenc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  renderCustosFixos();
+  updateCustoFixoTotal();
+}
+
+async function toggleCustoFixo(id){
+  const cf=custosFixos.find(c=>c.id===id);
+  if(!cf)return;
+  cf.ativo=!cf.ativo;
+  try{await dbPatch('custos_fixos',id,{ativo:cf.ativo});}catch(e){}
+  renderCustosFixos();
+  updateCustoFixoTotal();
+}
+
+async function delCustoFixo(id){
+  custosFixos=custosFixos.filter(c=>c.id!==id);
+  try{await dbDelete('custos_fixos',id);}catch(e){}
+  renderCustosFixos();
+  updateCustoFixoTotal();
+}
+
+function renderCustosFixos(){
+  const el=document.getElementById('tblCustosFixos');
+  if(!el)return;
+  const freqLabel={mensal:'Mensal',semanal:'Semanal',diario:'Diário'};
+  const catCores={Aluguel:'#3B82F6',Funcionário:'#00C87A','Pró-Labore':'#00C87A',Energia:'#FFB800',Água:'#06B6D4',Gás:'#F97316',Sistema:'#9333EA',Marketing:'#F59E0B',Contabilidade:'#6366F1',Segurança:'#EF4444',Jurídico:'#8B5CF6',Motoboy:'#FF4D00',Outro:'#888'};
+  el.innerHTML=custosFixos.length>0?custosFixos.map(cf=>{
+    const cor=catCores[cf.categoria]||'#888';
+    const ativo=cf.ativo!==false;
+    return`<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border-radius:12px;border:1px solid ${ativo?cor+'44':'var(--border)'}">
+      <div style="width:4px;height:48px;border-radius:4px;background:${ativo?cor:'var(--border)'}"></div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:0.85rem;font-weight:700;color:${ativo?'var(--text)':'var(--muted)'}">${cf.descricao}</span>
+          <span style="font-size:0.95rem;font-weight:900;color:${ativo?'var(--red)':'var(--muted)'}">${fmt(cf.valor)}</span>
+        </div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:3px">
+          <span class="badge" style="background:${cor}22;color:${cor}">${cf.categoria||'Outro'}</span>
+          <span style="margin-left:6px">${freqLabel[cf.frequencia]||'Mensal'} · Vence dia ${cf.dia_vencimento||1}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button onclick="toggleCustoFixo(${cf.id})" style="background:${ativo?'#00C87A22':'var(--card)'};border:1px solid ${ativo?'#00C87A':'var(--border)'};color:${ativo?'#00C87A':'var(--muted)'};padding:5px 10px;border-radius:8px;cursor:pointer;font-size:0.72rem;font-weight:800;font-family:Nunito,sans-serif">${ativo?'✅ Ativo':'⏸ Pausado'}</button>
+        <button class="edit-btn" onclick="delCustoFixo(${cf.id})">🗑</button>
+      </div>
+    </div>`;
+  }).join('')
+  :'<div style="color:var(--muted);font-size:0.8rem;text-align:center;padding:20px">Nenhum custo fixo cadastrado ainda</div>';
+
+  // Gráfico por categoria
+  renderChartFixosCat();
+}
+
+function updateCustoFixoTotal(){
+  const total=custosFixos.filter(c=>c.ativo!==false).reduce((s,c)=>s+(parseFloat(c.valor)||0),0);
+  if(document.getElementById('custoFixoTotal'))document.getElementById('custoFixoTotal').textContent=fmt(total);
+  if(document.getElementById('resumoFixos'))document.getElementById('resumoFixos').textContent=fmt(total);
+}
+
+function renderChartFixosCat(){
+  dc('fixosCat');
+  const el=document.getElementById('chartFixosCat');
+  if(!el)return;
+  const cats={};
+  custosFixos.filter(c=>c.ativo!==false).forEach(c=>{cats[c.categoria||'Outro']=(cats[c.categoria||'Outro']||0)+(parseFloat(c.valor)||0);});
+  const labels=Object.keys(cats),vals=Object.values(cats);
+  if(!labels.length)return;
+  const cores=['#FF4D00','#FFB800','#3B82F6','#00C87A','#9333EA','#F97316','#06B6D4','#F59E0B','#EF4444','#8B5CF6','#10B981','#6366F1'];
+  charts['fixosCat']=new Chart(el,{
+    type:'doughnut',
+    data:{labels,datasets:[{data:vals,backgroundColor:cores.slice(0,labels.length).map(c=>c+'bb'),borderColor:cores.slice(0,labels.length),borderWidth:2}]},
+    options:{...chartDefaults,cutout:'55%'}
+  });
+}
+
+function switchCustoTab(tab){
+  const fixos=document.getElementById('painelFixos');
+  const varP=document.getElementById('painelVar');
+  const btnF=document.getElementById('tabFixos');
+  const btnV=document.getElementById('tabVarCusto');
+  if(tab==='fixos'){
+    if(fixos)fixos.style.display='';
+    if(varP)varP.style.display='none';
+    if(btnF){btnF.style.background='var(--yellow)';btnF.style.color='#000';}
+    if(btnV){btnV.style.background='transparent';btnV.style.color='var(--muted)';}
+    renderCustosFixos();
+  } else {
+    if(fixos)fixos.style.display='none';
+    if(varP)varP.style.display='';
+    if(btnF){btnF.style.background='transparent';btnF.style.color='var(--muted)';}
+    if(btnV){btnV.style.background='var(--yellow)';btnV.style.color='#000';}
+    renderFinanceiroChart();
+  }
+}
 
 // ── MOTOBOYS ──────────────────────────────────────────────────────────────
 const MB_NOMES=['Raphael','Igor','Samuel','Luiz'];
@@ -1719,6 +1959,8 @@ function showPage(id,el){
   el.classList.add('active');
   if(id==='overview'){setTimeout(()=>{renderHomeCharts();renderAcumulado();},100);}
   if(id==='motoboys'){setTimeout(()=>renderMotoboys(),100);}
+  if(id==='saidas'){setTimeout(()=>renderSaidasChart(),100);}
+  if(id==='variaveis'){setTimeout(()=>{switchCustoTab('fixos');loadCustosFixos();},100);}
   if(id==='graficos')renderGraficos();
   if(id==='cmv'){renderCMVChart();setTimeout(renderCMVChart,200);}
   if(id==='variaveis')renderFinanceiroChart();
