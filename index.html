@@ -1023,8 +1023,11 @@ function renderSaidas(){
 }
 
 function renderEstoque(){
-  const q=(document.getElementById('searchEstoque').value||'').toLowerCase();
-  document.getElementById('tblEstoque').innerHTML=state.estoque.filter(i=>i.nome.toLowerCase().includes(q)).map(i=>`
+  const searchEl=document.getElementById('searchEstoque');
+  const tblEl=document.getElementById('tblEstoque');
+  if(!tblEl)return;
+  const q=(searchEl?searchEl.value||'':'').toLowerCase();
+  tblEl.innerHTML=state.estoque.filter(i=>i.nome&&i.nome.toLowerCase().includes(q)).map(i=>`
     <tr><td>${i.nome}</td><td style="color:var(--muted)">${i.unidade}</td>
     <td><input class="tbl-input" type="number" value="${i.qtd||0}" step="0.01" min="0" onchange="updQtd('${i.id}',this.value)"></td>
     <td><input class="tbl-input" type="number" value="${i.custo||0}" step="0.01" min="0" onchange="updCusto('${i.id}',this.value)" style="width:90px"></td>
@@ -1436,6 +1439,7 @@ async function addSaida(){
 
 async function restaurarEstoque(){
   const el=document.getElementById('estoqueRestaurMsg');
+  if(!el){alert('Navegue para a aba Estoque primeiro');return;}
   el.innerHTML='<div class="alert alert-blue">🔄 Verificando estoque no banco...</div>';
   try{
     // Busca direto do banco (não confia só no state)
@@ -1466,6 +1470,7 @@ async function restaurarEstoque(){
 async function limparERestarurar(){
   if(!confirm('⚠️ ATENÇÃO: Isso vai apagar TODO o estoque atual e reinserir o padrão. Continuar?'))return;
   const el=document.getElementById('estoqueRestaurMsg');
+  if(!el){alert('Navegue para a aba Estoque primeiro');return;}
   el.innerHTML='<div class="alert alert-blue">🔄 Limpando e restaurando...</div>';
   try{
     // Deleta todos os itens atuais
@@ -2136,6 +2141,7 @@ function showPage(id,el){
   if(id==='overview'){setTimeout(()=>{renderHomeCharts();renderAcumulado();},100);}
   if(id==='motoboys'){setTimeout(()=>renderMotoboys(),100);}
   if(id==='saidas'){setTimeout(()=>renderSaidasChart(),100);}
+  if(id==='estoque'){setTimeout(()=>renderEstoque(),100);}
   if(id==='variaveis'){setTimeout(()=>{switchCustoTab('fixos');loadCustosFixos();},100);}
   if(id==='graficos'){renderGraficos();setTimeout(()=>renderGDespChart(),100);}
   if(id==='cmv'){renderCMVChart();setTimeout(renderCMVChart,200);}
