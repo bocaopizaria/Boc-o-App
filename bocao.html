@@ -179,50 +179,33 @@ tr:hover td{background:#ffffff08;}
   <div id="alertas-container"></div>
   <div id="mp-sync-banner"></div>
 
-  <!-- RESUMO FINANCEIRO DO DIA -->
+  <!-- RESUMO DO DIA -->
   <div class="cards">
-    <div class="card green">
-      <div class="card-icon">💰</div>
-      <div class="card-label">Caixa Atual</div>
-      <div class="card-val green" id="caixaAtual">R$ 0,00</div>
-      <div class="card-sub">Receita − Despesas</div>
-    </div>
-    <div class="card green">
-      <div class="card-icon">📈</div>
-      <div class="card-label">Receita Hoje</div>
-      <div class="card-val green" id="receitaHoje">R$ 0,00</div>
-      <div class="card-sub">Todas as entradas</div>
-    </div>
-    <div class="card red">
-      <div class="card-icon">📉</div>
-      <div class="card-label">Saídas Hoje</div>
-      <div class="card-val red" id="saidasHoje">R$ 0,00</div>
-      <div class="card-sub">Despesas do dia</div>
-    </div>
-    <div class="card blue">
-      <div class="card-icon">🏆</div>
-      <div class="card-label">Lucro do Dia</div>
-      <div class="card-val" id="lucroHoje">R$ 0,00</div>
-      <div class="card-sub">Receita − Saídas</div>
-    </div>
-    <div class="card blue">
-      <div class="card-icon">🗓️</div>
-      <div class="card-label">Receita Semana</div>
-      <div class="card-val" id="receitaSemana">R$ 0,00</div>
-      <div class="card-sub">Seg → Dom</div>
-    </div>
-    <div class="card red">
-      <div class="card-icon">⚠️</div>
-      <div class="card-label">A Pagar</div>
-      <div class="card-val red" id="aPagar">R$ 0,00</div>
-      <div class="card-sub">Contas futuras</div>
+    <div class="card green"><div class="card-icon">💰</div><div class="card-label">Caixa Atual</div><div class="card-val green" id="caixaAtual">R$ 0,00</div><div class="card-sub">Receita − Despesas</div></div>
+    <div class="card green"><div class="card-icon">📈</div><div class="card-label">Receita Hoje</div><div class="card-val green" id="receitaHoje">R$ 0,00</div><div class="card-sub">Todas as entradas</div></div>
+    <div class="card red"><div class="card-icon">📉</div><div class="card-label">Saídas Hoje</div><div class="card-val red" id="saidasHoje">R$ 0,00</div><div class="card-sub">Despesas do dia</div></div>
+    <div class="card blue"><div class="card-icon">🏆</div><div class="card-label">Lucro do Dia</div><div class="card-val" id="lucroHoje">R$ 0,00</div><div class="card-sub">Receita − Saídas</div></div>
+    <div class="card blue"><div class="card-icon">🗓️</div><div class="card-label">Receita Semana</div><div class="card-val" id="receitaSemana">R$ 0,00</div><div class="card-sub">Seg → Dom</div></div>
+    <div class="card red"><div class="card-icon">⚠️</div><div class="card-label">A Pagar</div><div class="card-val red" id="aPagar">R$ 0,00</div><div class="card-sub">Contas futuras</div></div>
+  </div>
+
+  <!-- RESUMO DO MÊS -->
+  <div class="section">
+    <div class="section-title"><span class="icon">📅</span> Resumo do Mês</div>
+    <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+      <div class="card green"><div class="card-icon">📈</div><div class="card-label">Entradas Mês</div><div class="card-val green" id="mesEntradas">R$ 0,00</div></div>
+      <div class="card red"><div class="card-icon">📉</div><div class="card-label">Saídas Mês</div><div class="card-val red" id="mesSaidas">R$ 0,00</div></div>
+      <div class="card red"><div class="card-icon">🛒</div><div class="card-label">Compras Mês</div><div class="card-val red" id="mesCompras">R$ 0,00</div></div>
+      <div class="card blue"><div class="card-icon">🏆</div><div class="card-label">Lucro Mês</div><div class="card-val" id="mesLucro">R$ 0,00</div></div>
+      <div class="card yellow"><div class="card-icon">🎯</div><div class="card-label">Ticket Médio</div><div class="card-val yellow" id="mesTicket">R$ 0,00</div></div>
+      <div class="card blue"><div class="card-icon">🍕</div><div class="card-label">Pedidos Mês</div><div class="card-val" id="mesPedidos">0</div></div>
     </div>
   </div>
 
   <!-- ENTRADAS POR CANAL HOJE -->
   <div class="section">
     <div class="section-title"><span class="icon">💳</span> Entradas por Canal — Hoje</div>
-    <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+    <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
       <div class="card green"><div class="card-icon">💳</div><div class="card-label">Stone</div><div class="card-val green" id="ovStone">R$ 0,00</div></div>
       <div class="card green"><div class="card-icon">📱</div><div class="card-label">Mercado Pago</div><div class="card-val green" id="ovMP">R$ 0,00</div></div>
       <div class="card green"><div class="card-icon">🛵</div><div class="card-label">iFood</div><div class="card-val green" id="ovIfood">R$ 0,00</div></div>
@@ -231,24 +214,58 @@ tr:hover td{background:#ffffff08;}
     </div>
   </div>
 
-  <!-- CONTAS A PAGAR URGENTES -->
+
+  <!-- RECEITA ACUMULADA NO MÊS -->
+  <div class="section">
+    <div class="section-title"><span class="icon">📈</span> Receita Acumulada no Mês — Dia a Dia</div>
+    <div style="position:relative;height:260px;margin-bottom:16px;"><canvas id="chartAcumulado" role="img" aria-label="Receita acumulada no mês"></canvas></div>
+    <!-- TABELA DIA A DIA -->
+    <div class="scrolltable">
+      <table>
+        <thead><tr><th>Dia</th><th>Receita do Dia</th><th>Saídas do Dia</th><th>Lucro do Dia</th><th>Acumulado Receita</th><th>Acumulado Saídas</th></tr></thead>
+        <tbody id="tblDiaDia"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GRÁFICOS ROW 1: CMV Semanal + Receita por Canal -->
+  <div class="chart-grid">
+    <div class="section">
+      <div class="section-title"><span class="icon">📉</span> CMV Semanal</div>
+      <div style="position:relative;height:220px;"><canvas id="chartCmvHome" role="img" aria-label="CMV semanal"></canvas></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="icon">🥧</span> Receita por Canal — Mês</div>
+      <div style="position:relative;height:220px;"><canvas id="chartCanaisHome" role="img" aria-label="Receita por canal"></canvas></div>
+    </div>
+  </div>
+
+  <!-- GRÁFICOS ROW 2: Custos da Semana + Ticket Médio -->
+  <div class="chart-grid">
+    <div class="section">
+      <div class="section-title"><span class="icon">💸</span> Custos da Semana</div>
+      <div style="position:relative;height:220px;"><canvas id="chartCustosHome" role="img" aria-label="Custos da semana"></canvas></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="icon">📊</span> Receita da Semana</div>
+      <div style="position:relative;height:220px;"><canvas id="chartSemanaHome" role="img" aria-label="Receita da semana"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 5 PIZZAS MAIS VENDIDAS -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🍕</span> 5 Pizzas Mais Vendidas — Mês (Cardápio Web)</div>
+    <div id="pizzaRanking" style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+      <div style="color:var(--muted);font-size:0.8rem;font-weight:600;text-align:center;padding:20px">Sincronize o Cardápio Web para ver o ranking 🍕</div>
+    </div>
+  </div>
+
+  <!-- CONTAS URGENTES -->
   <div class="section">
     <div class="section-title"><span class="icon">🔥</span> Contas Urgentes — Próximos 7 dias</div>
     <div class="scrolltable">
       <table><thead><tr><th>Vencimento</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th></th></tr></thead>
       <tbody id="tblContasUrgentes"></tbody></table>
-    </div>
-  </div>
-
-  <!-- GRÁFICOS -->
-  <div class="chart-grid">
-    <div class="section">
-      <div class="section-title"><span class="icon">🥧</span> Entradas por Canal</div>
-      <div style="position:relative;height:220px;"><canvas id="chartCanaisHome" role="img" aria-label="Entradas por canal hoje"></canvas></div>
-    </div>
-    <div class="section">
-      <div class="section-title"><span class="icon">📊</span> Receita da Semana</div>
-      <div style="position:relative;height:220px;"><canvas id="chartSemanaHome" role="img" aria-label="Receita da semana"></canvas></div>
     </div>
   </div>
 
@@ -356,6 +373,15 @@ tr:hover td{background:#ffffff08;}
       <table><thead><tr><th>Item</th><th>Un.</th><th>Qtd</th><th>Custo Unit.</th><th>Total</th><th></th></tr></thead>
       <tbody id="tblEstoque"></tbody></table>
     </div>
+  </div>
+  <div class="section">
+    <div class="section-title"><span class="icon">🔄</span> Restaurar Estoque Padrão</div>
+    <p style="font-size:0.8rem;color:var(--muted);font-weight:600;margin-bottom:12px">Reinsere todos os itens do estoque inicial. Use quando o estoque estiver vazio ou após uma limpeza acidental.</p>
+    <div class="form-row">
+      <button class="btn btn-yellow" onclick="restaurarEstoque()">🔄 Restaurar Estoque Inicial</button>
+      <button class="btn btn-ghost" onclick="limparERestarurar()" style="border-color:var(--red);color:var(--red)">⚠️ Limpar tudo e restaurar</button>
+    </div>
+    <div id="estoqueRestaurMsg" style="margin-top:8px"></div>
   </div>
   <div class="section">
     <div class="section-title"><span class="icon">➕</span> Adicionar Item</div>
@@ -587,7 +613,7 @@ async function dbPost(t,d){const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:
 async function dbPatch(t,id,d){const r=await fetch(`${SB_URL}/rest/v1/${t}?id=eq.${id}`,{method:'PATCH',headers:hdrs,body:JSON.stringify(d)});if(!r.ok)throw new Error(await r.text());return r.json();}
 async function dbDelete(t,id){const r=await fetch(`${SB_URL}/rest/v1/${t}?id=eq.${id}`,{method:'DELETE',headers:hdrs});if(!r.ok)throw new Error(await r.text());}
 
-let state={entradas:[],saidas:[],estoque:[],compras:[],futuras:[],cmvHistorico:[],estoqueInicialSemana:0,mpSyncedIds:[],weekData:{seg:0,ter:0,qua:0,qui:0,sex:0,sab:0,dom:0}};
+let state={entradas:[],saidas:[],estoque:[],compras:[],futuras:[],cmvHistorico:[],estoqueInicialSemana:0,mpSyncedIds:[],weekData:{seg:0,ter:0,qua:0,qui:0,sex:0,sab:0,dom:0},monthEntradas:[],monthSaidas:[],monthCompras:[],cwAllPedidos:[]};
 
 const ESTOQUE_INICIAL=[
   {nome:"Farinha de Trigo Sotrigo 1kg",unidade:"sc",qtd:40,custo:3.45},
@@ -669,17 +695,21 @@ const FUTURAS_INICIAL=[
 
 async function loadAll(){
   try{
-    const today=todayISO(),ws=getWeekStart();
-    const [ent,sai,est,comp,fut,cmv,cfg]=await Promise.all([
+    const today=todayISO(),ws=getWeekStart(),ms=getMonthStart();
+    const [ent,sai,est,comp,fut,cmv,cfg,ment,msai,mcomp]=await Promise.all([
       dbGet('entradas',`data=eq.${today}&order=created_at.desc`),
       dbGet('saidas',`data=eq.${today}&order=created_at.desc`),
-      dbGet('estoque',`order=nome.asc`),
+      dbGet('estoque',`order=nome.asc&limit=1000`),
       dbGet('compras',`data=gte.${ws}&order=created_at.desc`),
       dbGet('futuras',`order=vencimento.asc`),
       dbGet('cmv_historico',`order=created_at.desc&limit=20`),
-      dbGet('config','')
+      dbGet('config',''),
+      dbGet('entradas',`data=gte.${ms}&order=created_at.desc`),
+      dbGet('saidas',`data=gte.${ms}&order=created_at.desc`),
+      dbGet('compras',`data=gte.${ms}&order=created_at.desc`),
     ]);
     state.entradas=ent;state.saidas=sai;
+    state.monthEntradas=ment;state.monthSaidas=msai;state.monthCompras=mcomp;
     state.estoque=est.length>0?est:await dbPost('estoque',ESTOQUE_INICIAL).then(()=>dbGet('estoque','order=nome.asc')).catch(()=>ESTOQUE_INICIAL);
     state.compras=comp;
     state.futuras=fut.length>0?fut:await dbPost('futuras',FUTURAS_INICIAL).then(()=>dbGet('futuras','order=vencimento.asc')).catch(()=>FUTURAS_INICIAL);
@@ -687,6 +717,17 @@ async function loadAll(){
     const ce=cfg.find(c=>c.chave==='estoque_inicial_semana');
     state.estoqueInicialSemana=ce?parseFloat(ce.valor):0;
     state.mpSyncedIds=ent.filter(e=>e.mp_id).map(e=>e.mp_id).concat(sai.filter(s=>s.mp_id).map(s=>s.mp_id));
+    // Carrega receita dos últimos 7 dias para o weekData
+    try{
+      const ws2=getWeekStart();
+      const entSemana=await dbGet('entradas',`data=gte.${ws2}&order=data.asc`);
+      const dias=['dom','seg','ter','qua','qui','sex','sab'];
+      entSemana.forEach(e=>{
+        if(!e.data)return;
+        const wd=dias[new Date(e.data+'T12:00:00').getDay()];
+        state.weekData[wd]=(state.weekData[wd]||0)+(parseFloat(e.valor)||0);
+      });
+    }catch(e){}
     document.getElementById('dbStatus').textContent='● Online';
     document.getElementById('dbStatus').style.background='#00C87A22';
     document.getElementById('dbStatus').style.borderColor='#00C87A55';
@@ -703,16 +744,25 @@ async function initRealtime(){
   setInterval(async()=>{
     try{
       const today=todayISO(),ws=getWeekStart();
-      const [ent,sai,fut,comp]=await Promise.all([
+      const ms2=getMonthStart();
+      const [ent,sai,fut,comp,ment2,msai2,mcomp2]=await Promise.all([
         dbGet('entradas',`data=eq.${today}&order=created_at.desc`),
         dbGet('saidas',`data=eq.${today}&order=created_at.desc`),
         dbGet('futuras',`order=vencimento.asc`),
         dbGet('compras',`data=gte.${ws}&order=created_at.desc`),
+        dbGet('entradas',`data=gte.${ms2}&order=created_at.desc`),
+        dbGet('saidas',`data=gte.${ms2}&order=created_at.desc`),
+        dbGet('compras',`data=gte.${ms2}&order=created_at.desc`),
       ]);
       state.entradas=ent;state.saidas=sai;state.futuras=fut;state.compras=comp;
+      state.monthEntradas=ment2;state.monthSaidas=msai2;state.monthCompras=mcomp2;
       updateAll();
     }catch(e){}
   },15000);
+  // Recarrega estoque a cada 60s para garantir sincronização
+  setInterval(async()=>{
+    try{state.estoque=await dbGet('estoque','order=nome.asc&limit=1000');updateAll();}catch(e){}
+  },60000);
 }
 
 const fmt=v=>'R$ '+parseFloat(v||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
@@ -720,6 +770,7 @@ const nowT=()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-d
 const todayISO=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const todayS=()=>new Date().toLocaleDateString('pt-BR');
 const getWD=()=>['dom','seg','ter','qua','qui','sex','sab'][new Date().getDay()];
+function getMonthStart(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;}
 function getWeekStart(){const d=new Date(),day=d.getDay(),diff=d.getDate()-day+(day===0?-6:1);return new Date(new Date(d).setDate(diff)).toISOString().split('T')[0];}
 function calcReceita(){return state.entradas.reduce((s,e)=>s+(parseFloat(e.valor)||0),0);}
 function calcSaidas(){return state.saidas.reduce((s,e)=>s+(parseFloat(e.valor)||0),0);}
@@ -733,48 +784,48 @@ function updateAll(){
   if(!state.weekData)state.weekData={seg:0,ter:0,qua:0,qui:0,sex:0,sab:0,dom:0};
   state.weekData[getWD()]=calcReceita();
   const r=calcReceita(),s=calcSaidas();
-  document.getElementById('caixaAtual').textContent=fmt(calcCaixa());
-  document.getElementById('receitaHoje').textContent=fmt(r);
-  document.getElementById('saidasHoje').textContent=fmt(s);
-  document.getElementById('receitaSemana').textContent=fmt(r);
-  document.getElementById('estoqueTotal').textContent=fmt(calcEstoqueValor());
-  document.getElementById('aPagar').textContent=fmt(calcAPagar());
+  const _ca=document.getElementById('caixaAtual');if(_ca)_ca.textContent=fmt(calcCaixa());
+  const _rh=document.getElementById('receitaHoje');if(_rh)_rh.textContent=fmt(r);
+  const _sh=document.getElementById('saidasHoje');if(_sh)_sh.textContent=fmt(s);
+  const _rs=document.getElementById('receitaSemana');if(_rs)_rs.textContent=fmt(r);
+  const _et=document.getElementById('estoqueTotal');if(_et)_et.textContent=fmt(calcEstoqueValor());
+  const _ap=document.getElementById('aPagar');if(_ap)_ap.textContent=fmt(calcAPagar());
   document.getElementById('estoqueValorTotal').textContent=fmt(calcEstoqueValor());
   document.getElementById('totalItens').textContent=state.estoque.length;
-  document.getElementById('totalCompras').textContent=fmt(calcCompras());
+  const _tc=document.getElementById('totalCompras');if(_tc)_tc.textContent=fmt(calcCompras());
   const pago=state.compras.filter(c=>c.status==='pago'||!c.status).reduce((s,c)=>s+(parseFloat(c.valor)||0),0);
   const pend=state.compras.filter(c=>c.status==='pendente'||c.status==='parcelado').reduce((s,c)=>s+(parseFloat(c.valor)||0),0);
   if(document.getElementById('totalComprasPago'))document.getElementById('totalComprasPago').textContent=fmt(pago);
   if(document.getElementById('totalComprasPendente'))document.getElementById('totalComprasPendente').textContent=fmt(pend);
-  document.getElementById('totStone').textContent=fmt(canal('Stone'));
-  document.getElementById('totMP').textContent=fmt(canal('Mercado Pago'));
-  document.getElementById('totIfood').textContent=fmt(canal('iFood'));
-  document.getElementById('totCW').textContent=fmt(canal('Cardápio Web'));
-  document.getElementById('totOutros').textContent=fmt(canal('Dinheiro')+canal('Pix')+canal('Outro'));
+  const _ts=document.getElementById('totStone');if(_ts)_ts.textContent=fmt(canal('Stone'));
+  const _tm=document.getElementById('totMP');if(_tm)_tm.textContent=fmt(canal('Mercado Pago'));
+  const _ti=document.getElementById('totIfood');if(_ti)_ti.textContent=fmt(canal('iFood'));
+  const _tcw=document.getElementById('totCW');if(_tcw)_tcw.textContent=fmt(canal('Cardápio Web'));
+  const _to=document.getElementById('totOutros');if(_to)_to.textContent=fmt(canal('Dinheiro')+canal('Pix')+canal('Outro'));
   const saidasCanal=c=>state.saidas.filter(s=>s.categoria===c).reduce((s,e)=>s+(parseFloat(e.valor)||0),0);
   if(document.getElementById('totMPPag'))document.getElementById('totMPPag').textContent=fmt(saidasCanal('Pagamento MP'));
   if(document.getElementById('totMPTaxa'))document.getElementById('totMPTaxa').textContent=fmt(saidasCanal('Taxa MP'));
   if(document.getElementById('totMPPix'))document.getElementById('totMPPix').textContent=fmt(saidasCanal('Pix/Transferência MP'));
   const cmvV=(state.estoqueInicialSemana||0)+calcCompras()-calcEstoqueValor();
   const cmvPct=r>0?(cmvV/r*100):0;
-  document.getElementById('cmvInicial').textContent=fmt(state.estoqueInicialSemana||0);
-  document.getElementById('cmvCompras').textContent=fmt(calcCompras());
-  document.getElementById('cmvFinal').textContent=fmt(calcEstoqueValor());
-  document.getElementById('cmvTotal').textContent=fmt(Math.max(0,cmvV));
-  document.getElementById('cmvPct').textContent=cmvPct.toFixed(1)+'%';
-  document.getElementById('cmvBar').style.width=Math.min(100,cmvPct)+'%';
+  const _ci=document.getElementById('cmvInicial');if(_ci)_ci.textContent=fmt(state.estoqueInicialSemana||0);
+  const _cc=document.getElementById('cmvCompras');if(_cc)_cc.textContent=fmt(calcCompras());
+  const _cf=document.getElementById('cmvFinal');if(_cf)_cf.textContent=fmt(calcEstoqueValor());
+  const _ct=document.getElementById('cmvTotal');if(_ct)_ct.textContent=fmt(Math.max(0,cmvV));
+  const _cp=document.getElementById('cmvPct');if(_cp)_cp.textContent=cmvPct.toFixed(1)+'%';
+  const _cb=document.getElementById('cmvBar');if(_cb)_cb.style.width=Math.min(100,cmvPct)+'%';
   const riFood=canal('iFood'),rCartao=canal('Stone')+canal('Mercado Pago');
   const imp=r*0.07,tif=riFood*0.18,tmaq=rCartao*0.03,totV=imp+tif+tmaq;
-  document.getElementById('varImposto').textContent=fmt(imp);
-  document.getElementById('varIfood').textContent=fmt(tif);
-  document.getElementById('varMaquina').textContent=fmt(tmaq);
-  document.getElementById('varTotal').textContent=fmt(totV);
-  document.getElementById('resumoBruto').textContent=fmt(r);
-  document.getElementById('resumoFixos').textContent=fmt(calcAPagar());
-  document.getElementById('resumoVariaveis').textContent=fmt(totV);
+  const _vi=document.getElementById('varImposto');if(_vi)_vi.textContent=fmt(imp);
+  const _vif=document.getElementById('varIfood');if(_vif)_vif.textContent=fmt(tif);
+  const _vm=document.getElementById('varMaquina');if(_vm)_vm.textContent=fmt(tmaq);
+  const _vt=document.getElementById('varTotal');if(_vt)_vt.textContent=fmt(totV);
+  const _rb=document.getElementById('resumoBruto');if(_rb)_rb.textContent=fmt(r);
+  const _rf=document.getElementById('resumoFixos');if(_rf)_rf.textContent=fmt(calcAPagar());
+  const _rv=document.getElementById('resumoVariaveis');if(_rv)_rv.textContent=fmt(totV);
   const lucroEstimado=r-calcAPagar()-totV;
-  document.getElementById('resumoLucro').textContent=fmt(lucroEstimado);
-  document.getElementById('resumoLucro').style.color=lucroEstimado>=0?'var(--green)':'var(--red)';
+  const _rl=document.getElementById('resumoLucro');if(_rl)_rl.textContent=fmt(lucroEstimado);
+  if(_rl)_rl.style.color=lucroEstimado>=0?'var(--green)':'var(--red)';
   const lucroDia=calcReceita()-calcSaidas();
   if(document.getElementById('lucroHoje')){document.getElementById('lucroHoje').textContent=fmt(lucroDia);document.getElementById('lucroHoje').style.color=lucroDia>=0?'var(--green)':'var(--red)';}
   if(document.getElementById('ovStone'))document.getElementById('ovStone').textContent=fmt(canal('Stone'));
@@ -782,7 +833,7 @@ function updateAll(){
   if(document.getElementById('ovIfood'))document.getElementById('ovIfood').textContent=fmt(canal('iFood'));
   if(document.getElementById('ovCW'))document.getElementById('ovCW').textContent=fmt(canal('Cardápio Web'));
   if(document.getElementById('ovOutros'))document.getElementById('ovOutros').textContent=fmt(canal('Dinheiro')+canal('Pix')+canal('Outro'));
-  renderContasUrgentes();renderEntAPagar();
+  renderContasUrgentes();renderEntAPagar();updateMesCards();renderPizzaRanking();renderAcumulado();
   renderWeekGrid();renderAlertas();renderMovimentos();
   renderEntradas();renderSaidas();renderEstoque();
   renderCompras();renderFuturas();renderCmvHist();
@@ -903,11 +954,11 @@ function renderHomeCharts(){
 
 function renderGraficos(){
   const r=calcReceita(),s=calcSaidas(),lucro=r-s,cmvV=(state.estoqueInicialSemana||0)+calcCompras()-calcEstoqueValor(),cmvPct=r>0?(cmvV/r*100):0;
-  document.getElementById('gReceitaHoje').textContent=fmt(r);
-  document.getElementById('gDespesasHoje').textContent=fmt(s);
-  document.getElementById('gLucroHoje').textContent=fmt(lucro);
+  const _gr=document.getElementById('gReceitaHoje');if(_gr)_gr.textContent=fmt(r);
+  const _gd=document.getElementById('gDespesasHoje');if(_gd)_gd.textContent=fmt(s);
+  const _gl=document.getElementById('gLucroHoje');if(_gl)_gl.textContent=fmt(lucro);
   document.getElementById('gLucroHoje').style.color=lucro>=0?'var(--green)':'var(--red)';
-  document.getElementById('gCmvSemana').textContent=cmvPct.toFixed(1)+'%';
+  const _gc=document.getElementById('gCmvSemana');if(_gc)_gc.textContent=cmvPct.toFixed(1)+'%';
   const days=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],wd=new Date().getDay(),wdIdx=wd===0?6:wd-1;
   const rW=days.map((_,i)=>i===wdIdx?r:(state.weekData?.[['seg','ter','qua','qui','sex','sab','dom'][i]]||0));
   const sW=days.map((_,i)=>i===wdIdx?s:0);
@@ -954,6 +1005,202 @@ function renderEntAPagar(){
   }).join(''):'<tr><td colspan="5" style="color:var(--green);text-align:center;padding:16px">✅ Sem contas pendentes!</td></tr>';
 }
 
+
+function calcMesEntradas(){return(state.monthEntradas||[]).reduce((s,e)=>s+(parseFloat(e.valor)||0),0);}
+function calcMesSaidas(){return(state.monthSaidas||[]).reduce((s,e)=>s+(parseFloat(e.valor)||0),0);}
+function calcMesCompras(){return(state.monthCompras||[]).reduce((s,c)=>s+(parseFloat(c.valor)||0),0);}
+
+function updateMesCards(){
+  const me=calcMesEntradas(),ms=calcMesSaidas(),mc=calcMesCompras();
+  const ml=me-ms-mc;
+  // Ticket médio baseado nos pedidos do CW no mês
+  const cwMes=(state.cwAllPedidos||[]);
+  const cwTotal=cwMes.reduce((s,p)=>s+(parseFloat(p.total||p.total_price||p.value||0)),0);
+  const ticket=cwMes.length>0?cwTotal/cwMes.length:0;
+  if(document.getElementById('mesEntradas'))document.getElementById('mesEntradas').textContent=fmt(me);
+  if(document.getElementById('mesSaidas'))document.getElementById('mesSaidas').textContent=fmt(ms);
+  if(document.getElementById('mesCompras'))document.getElementById('mesCompras').textContent=fmt(mc);
+  if(document.getElementById('mesLucro')){document.getElementById('mesLucro').textContent=fmt(ml);document.getElementById('mesLucro').style.color=ml>=0?'var(--green)':'var(--red)';}
+  if(document.getElementById('mesTicket'))document.getElementById('mesTicket').textContent=fmt(ticket);
+  if(document.getElementById('mesPedidos'))document.getElementById('mesPedidos').textContent=cwMes.length;
+}
+
+function renderPizzaRanking(){
+  const el=document.getElementById('pizzaRanking');if(!el)return;
+  const pedidos=state.cwAllPedidos||[];
+  if(pedidos.length===0){el.innerHTML='<div style="color:var(--muted);font-size:0.8rem;font-weight:600;text-align:center;padding:20px">Sincronize o Cardápio Web para ver o ranking 🍕</div>';return;}
+  // Conta itens vendidos
+  const contagem={};
+  pedidos.forEach(p=>{
+    const items=p.items||p.order_items||[];
+    items.forEach(item=>{
+      const nome=item.name||item.product_name||item.title||'Item';
+      const qtd=parseInt(item.quantity||item.qty||1);
+      contagem[nome]=(contagem[nome]||0)+qtd;
+    });
+  });
+  const ranking=Object.entries(contagem).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(ranking.length===0){el.innerHTML='<div style="color:var(--muted);font-size:0.8rem;text-align:center;padding:20px">Nenhum item encontrado nos pedidos</div>';return;}
+  const maxQtd=ranking[0][1];
+  const medals=['🥇','🥈','🥉','4️⃣','5️⃣'];
+  el.innerHTML=ranking.map(([nome,qtd],i)=>{
+    const pct=Math.round(qtd/maxQtd*100);
+    return`<div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:1.2rem;width:28px">${medals[i]}</span>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:0.82rem;font-weight:700;color:var(--text)">${nome}</span>
+          <span style="font-size:0.8rem;font-weight:800;color:var(--yellow)">${qtd}x</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${i===0?'var(--yellow)':i===1?'#aaa':'var(--muted)'}"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderHomeCharts(){
+  // Se a página overview não está ativa, agenda re-render quando voltar
+  const ovPage=document.getElementById('page-overview');
+  if(ovPage&&!ovPage.classList.contains('active')){return;}
+  const wd=['seg','ter','qua','qui','sex','sab','dom'],labels=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+
+  // CMV Semanal (histórico)
+  dc('cmvHome');
+  if(document.getElementById('chartCmvHome')){
+    const cmvH=state.cmvHistorico.slice(0,6).reverse();
+    charts['cmvHome']=new Chart(document.getElementById('chartCmvHome'),{
+      type:'line',
+      data:{labels:cmvH.length>0?cmvH.map(c=>c.semana.replace('Semana ','')):['Sem dados'],
+        datasets:[{label:'CMV %',data:cmvH.length>0?cmvH.map(c=>parseFloat(c.pct).toFixed(1)):[0],
+          borderColor:'#FFB800',backgroundColor:'#FFB80033',fill:true,tension:0.4,pointBackgroundColor:'#FFB800',pointRadius:5}]},
+      options:{...chartDefaults,scales:{...chartDefaults.scales,y:{...chartDefaults.scales.y,callback:v=>v+'%'}}}
+    });
+  }
+
+  // Receita por Canal do Mês (pizza)
+  dc('canaisHome');
+  if(document.getElementById('chartCanaisHome')){
+    const canaisMes={
+      'Stone':(state.monthEntradas||[]).filter(e=>e.canal==='Stone').reduce((s,e)=>s+(parseFloat(e.valor)||0),0),
+      'Mercado Pago':(state.monthEntradas||[]).filter(e=>e.canal==='Mercado Pago').reduce((s,e)=>s+(parseFloat(e.valor)||0),0),
+      'iFood':(state.monthEntradas||[]).filter(e=>e.canal==='iFood').reduce((s,e)=>s+(parseFloat(e.valor)||0),0),
+      'Cardápio Web':(state.monthEntradas||[]).filter(e=>e.canal==='Cardápio Web').reduce((s,e)=>s+(parseFloat(e.valor)||0),0),
+      'Dinheiro/Pix':(state.monthEntradas||[]).filter(e=>['Dinheiro','Pix','Outro'].includes(e.canal)).reduce((s,e)=>s+(parseFloat(e.valor)||0),0),
+    };
+    const cLabels=Object.keys(canaisMes).filter(k=>canaisMes[k]>0);
+    const cVals=cLabels.map(k=>canaisMes[k]);
+    charts['canaisHome']=new Chart(document.getElementById('chartCanaisHome'),{
+      type:'doughnut',
+      data:{labels:cLabels.length>0?cLabels:['Sem dados'],
+        datasets:[{data:cVals.length>0?cVals:[1],
+          backgroundColor:['#3B82F688','#00B1EA88','#FF6B3588','#00C87A88','#FFB80088'],
+          borderColor:['#3B82F6','#00B1EA','#FF6B35','#00C87A','#FFB800'],borderWidth:2}]},
+      options:{...chartDefaults,cutout:'60%'}
+    });
+  }
+
+  // Custos da semana (categorias de saídas)
+  dc('custosHome');
+  if(document.getElementById('chartCustosHome')){
+    const cats=[...new Set(state.saidas.map(s=>s.categoria||'Outros'))];
+    const vals=cats.map(c=>state.saidas.filter(s=>s.categoria===c).reduce((s,e)=>s+(parseFloat(e.valor)||0),0));
+    charts['custosHome']=new Chart(document.getElementById('chartCustosHome'),{
+      type:'bar',
+      data:{labels:cats.length>0?cats:['Sem dados'],
+        datasets:[{label:'R$',data:vals.length>0?vals:[0],
+          backgroundColor:'#FF4D0066',borderColor:'#FF4D00',borderWidth:2,borderRadius:6}]},
+      options:{...chartDefaults,indexAxis:'y',scales:{x:{...chartDefaults.scales.x,callback:v=>'R$'+v.toLocaleString('pt-BR')},y:{ticks:{color:'#888',font:{size:10}},grid:{color:'#2a2a2a'}}}}
+    });
+  }
+
+  // Receita da semana (barras por dia)
+  dc('semanaHome');
+  if(document.getElementById('chartSemanaHome')){
+    const todayWD=getWD();
+    const wdVals=wd.map(d=>d===todayWD?calcReceita():(state.weekData[d]||0));
+    charts['semanaHome']=new Chart(document.getElementById('chartSemanaHome'),{
+      type:'bar',
+      data:{labels,datasets:[{label:'Receita (R$)',data:wdVals,
+        backgroundColor:wd.map(d=>d===todayWD?'#00C87A88':'#3B82F644'),
+        borderColor:wd.map(d=>d===todayWD?'#00C87A':'#3B82F6'),borderWidth:2,borderRadius:6}]},
+      options:{...chartDefaults,scales:{...chartDefaults.scales,y:{...chartDefaults.scales.y,callback:v=>'R$'+v.toLocaleString('pt-BR')}}}
+    });
+  }
+}
+
+
+function renderAcumulado(){
+  const hoje=new Date();
+  const ano=hoje.getFullYear(),mes=hoje.getMonth();
+  const diaHoje=hoje.getDate();
+
+  // Agrupa entradas e saídas do mês por dia
+  const recDia={},saiDia={};
+  (state.monthEntradas||[]).forEach(e=>{
+    const d=parseInt((e.data||'').split('-')[2]||0);
+    if(d>0)recDia[d]=(recDia[d]||0)+(parseFloat(e.valor)||0);
+  });
+  (state.monthSaidas||[]).forEach(s=>{
+    const d=parseInt((s.data||'').split('-')[2]||0);
+    if(d>0)saiDia[d]=(saiDia[d]||0)+(parseFloat(s.valor)||0);
+  });
+
+  const labels=[],recAcum=[],saiAcum=[],recDiario=[],saiDiario=[];
+  let acumRec=0,acumSai=0;
+
+  for(let d=1;d<=diaHoje;d++){
+    const r=recDia[d]||0, s=saiDia[d]||0;
+    acumRec+=r; acumSai+=s;
+    labels.push(`${String(d).padStart(2,'0')}/${String(mes+1).padStart(2,'0')}`);
+    recAcum.push(parseFloat(acumRec.toFixed(2)));
+    saiAcum.push(parseFloat(acumSai.toFixed(2)));
+    recDiario.push(r);
+    saiDiario.push(s);
+  }
+
+  // Gráfico
+  dc('acumulado');
+  const el=document.getElementById('chartAcumulado');
+  if(el){
+    charts['acumulado']=new Chart(el,{
+      type:'line',
+      data:{
+        labels,
+        datasets:[
+          {label:'Receita Acumulada',data:recAcum,borderColor:'#00C87A',backgroundColor:'#00C87A22',fill:true,tension:0.3,pointBackgroundColor:'#00C87A',pointRadius:4,borderWidth:2},
+          {label:'Saídas Acumuladas',data:saiAcum,borderColor:'#FF4D00',backgroundColor:'#FF4D0011',fill:true,tension:0.3,pointBackgroundColor:'#FF4D00',pointRadius:4,borderWidth:2},
+        ]
+      },
+      options:{
+        ...chartDefaults,
+        interaction:{mode:'index',intersect:false},
+        scales:{
+          x:{ticks:{color:'#888',font:{size:10},maxTicksLimit:15},grid:{color:'#2a2a2a'}},
+          y:{ticks:{color:'#888',font:{size:11},callback:v=>'R$'+v.toLocaleString('pt-BR')},grid:{color:'#2a2a2a'}}
+        }
+      }
+    });
+  }
+
+  // Tabela dia a dia
+  const tbl=document.getElementById('tblDiaDia');
+  if(!tbl)return;
+  if(labels.length===0){tbl.innerHTML='<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:20px">Nenhum dado ainda este mês</td></tr>';return;}
+  tbl.innerHTML=labels.map((lbl,i)=>{
+    const r=recDiario[i],s=saiDiario[i],lucro=r-s;
+    const acR=recAcum[i],acS=saiAcum[i];
+    const isHoje=i===labels.length-1;
+    return`<tr style="${isHoje?'background:#FFB80010;':''}">
+      <td style="font-weight:${isHoje?'800':'600'};color:${isHoje?'var(--yellow)':'var(--text)'}">${lbl}${isHoje?' 📍':''}</td>
+      <td style="color:var(--green);font-weight:700">${fmt(r)}</td>
+      <td style="color:var(--red);font-weight:700">${fmt(s)}</td>
+      <td style="color:${lucro>=0?'var(--green)':'var(--red)'};font-weight:800">${fmt(lucro)}</td>
+      <td style="color:var(--green);font-weight:800">${fmt(acR)}</td>
+      <td style="color:var(--red);font-weight:800">${fmt(acS)}</td>
+    </tr>`;
+  }).join('');
+}
+
 function renderCMVChart(){
   const cmvH=state.cmvHistorico.slice(-6).reverse();
   dc('cmvHist');
@@ -969,11 +1216,91 @@ function renderFinanceiroChart(){
 }
 
 // ACTIONS
-async function addEntrada(){const v=parseFloat(document.getElementById('entValor').value);if(!v||v<=0)return alert('Informe um valor válido');const rec=await dbPost('entradas',[{canal:document.getElementById('entCanal').value,valor:v,descricao:document.getElementById('entDesc').value,hora:nowT(),data:todayISO(),auto:false}]);state.entradas.unshift(rec[0]);document.getElementById('entValor').value='';document.getElementById('entDesc').value='';updateAll();}
-async function addSaida(){const v=parseFloat(document.getElementById('saiValor').value);if(!v||v<=0)return alert('Informe um valor válido');const rec=await dbPost('saidas',[{categoria:document.getElementById('saiCat').value,valor:v,descricao:document.getElementById('saiDesc').value,hora:nowT(),data:todayISO()}]);state.saidas.unshift(rec[0]);document.getElementById('saiValor').value='';document.getElementById('saiDesc').value='';updateAll();}
+async function addEntrada(){
+  const v=parseFloat(document.getElementById('entValor').value);
+  if(!v||v<=0)return alert('Informe um valor válido');
+  const rec=await dbPost('entradas',[{canal:document.getElementById('entCanal').value,valor:v,descricao:document.getElementById('entDesc').value,hora:nowT(),data:todayISO(),auto:false}]);
+  state.entradas.unshift(rec[0]);
+  document.getElementById('entValor').value='';
+  document.getElementById('entDesc').value='';
+  try{const ms=getMonthStart();const [ment]=await Promise.all([dbGet('entradas',`data=gte.${ms}&order=created_at.desc`)]);state.monthEntradas=ment;}catch(e){}
+  updateAll();
+}
+async function addSaida(){
+  const v=parseFloat(document.getElementById('saiValor').value);
+  if(!v||v<=0)return alert('Informe um valor válido');
+  const rec=await dbPost('saidas',[{categoria:document.getElementById('saiCat').value,valor:v,descricao:document.getElementById('saiDesc').value,hora:nowT(),data:todayISO()}]);
+  state.saidas.unshift(rec[0]);
+  document.getElementById('saiValor').value='';
+  document.getElementById('saiDesc').value='';
+  // Recarrega dados do mês imediatamente para refletir nos gráficos
+  try{const ms=getMonthStart();const [msai]=await Promise.all([dbGet('saidas',`data=gte.${ms}&order=created_at.desc`)]);state.monthSaidas=msai;}catch(e){}
+  updateAll();
+}
+
+async function restaurarEstoque(){
+  const el=document.getElementById('estoqueRestaurMsg');
+  el.innerHTML='<div class="alert alert-blue">🔄 Verificando estoque no banco...</div>';
+  try{
+    // Busca direto do banco (não confia só no state)
+    const estoqueDB=await dbGet('estoque','order=nome.asc&limit=1000');
+    state.estoque=estoqueDB;
+    const existentes=estoqueDB.map(e=>e.nome.toLowerCase().trim());
+    const faltando=ESTOQUE_INICIAL.filter(i=>!existentes.includes(i.nome.toLowerCase().trim()));
+    el.innerHTML=`<div class="alert alert-blue">🔄 Encontrados ${estoqueDB.length} itens no banco. Faltando: ${faltando.length}. Inserindo...</div>`;
+    if(faltando.length===0){
+      updateAll();
+      el.innerHTML=`<div class="alert alert-green">✅ Estoque completo! ${estoqueDB.length} itens carregados.</div>`;
+      return;
+    }
+    // Insere em lotes de 20 para não sobrecarregar
+    const lote=20;
+    for(let i=0;i<faltando.length;i+=lote){
+      const batch=faltando.slice(i,i+lote);
+      const novos=await dbPost('estoque',batch);
+      state.estoque.push(...novos);
+    }
+    // Recarrega do banco após inserção
+    state.estoque=await dbGet('estoque','order=nome.asc&limit=1000');
+    el.innerHTML=`<div class="alert alert-green">✅ ${faltando.length} item(s) restaurado(s)! Total: ${state.estoque.length} itens.</div>`;
+    updateAll();
+  }catch(e){el.innerHTML=`<div class="alert alert-warn">❌ Erro: ${e.message}</div>`;}
+}
+
+async function limparERestarurar(){
+  if(!confirm('⚠️ ATENÇÃO: Isso vai apagar TODO o estoque atual e reinserir o padrão. Continuar?'))return;
+  const el=document.getElementById('estoqueRestaurMsg');
+  el.innerHTML='<div class="alert alert-blue">🔄 Limpando e restaurando...</div>';
+  try{
+    // Deleta todos os itens atuais
+    for(const item of [...state.estoque]){
+      await dbDelete('estoque',item.id);
+    }
+    state.estoque=[];
+    // Reinsere o padrão
+    const lote=20;
+    for(let i=0;i<ESTOQUE_INICIAL.length;i+=lote){
+      const batch=ESTOQUE_INICIAL.slice(i,i+lote);
+      const novos=await dbPost('estoque',batch);
+      state.estoque.push(...novos);
+    }
+    el.innerHTML=`<div class="alert alert-green">✅ Estoque restaurado! ${state.estoque.length} itens reinseridos.</div>`;
+    updateAll();
+  }catch(e){el.innerHTML=`<div class="alert alert-warn">❌ Erro: ${e.message}</div>`;}
+}
+
 async function addEstoque(){const nome=document.getElementById('novoProduto').value;if(!nome)return alert('Informe o nome');const rec=await dbPost('estoque',[{nome,qtd:parseFloat(document.getElementById('novaQtd').value)||0,unidade:document.getElementById('novaUnidade').value||'un',custo:parseFloat(document.getElementById('novoCusto').value)||0}]);state.estoque.push(rec[0]);['novoProduto','novaQtd','novaUnidade','novoCusto'].forEach(id=>document.getElementById(id).value='');updateAll();}
 async function addCompra(){const v=parseFloat(document.getElementById('compValor').value);if(!v||v<=0)return alert('Informe um valor válido');const rec=await dbPost('compras',[{fornecedor:document.getElementById('compFornecedor').value,valor:v,data:document.getElementById('compData').value||todayISO(),descricao:document.getElementById('compDesc').value,status:document.getElementById('compStatus').value,pagamento:document.getElementById('compPagamento').value}]);state.compras.unshift(rec[0]);['compFornecedor','compValor','compDesc'].forEach(id=>document.getElementById(id).value='');updateAll();}
-async function addFutura(){const desc=document.getElementById('futDesc').value,v=parseFloat(document.getElementById('futValor').value),venc=document.getElementById('futVenc').value;if(!desc||!v||!venc)return alert('Preencha todos os campos');const rec=await dbPost('futuras',[{descricao:desc,valor:v,vencimento:venc,categoria:document.getElementById('futCat').value,pago:false}]);state.futuras.push(rec[0]);['futDesc','futValor','futVenc'].forEach(id=>document.getElementById(id).value='');updateAll();}
+async function addFutura(){
+  const desc=document.getElementById('futDesc').value,v=parseFloat(document.getElementById('futValor').value),venc=document.getElementById('futVenc').value;
+  if(!desc||!v||!venc)return alert('Preencha todos os campos');
+  const rec=await dbPost('futuras',[{descricao:desc,valor:v,vencimento:venc,categoria:document.getElementById('futCat').value,pago:false}]);
+  state.futuras.push(rec[0]);
+  // Recarrega futuras completas do banco
+  try{state.futuras=await dbGet('futuras','order=vencimento.asc');}catch(e){}
+  ['futDesc','futValor','futVenc'].forEach(id=>document.getElementById(id).value='');
+  updateAll();
+}
 async function updQtd(id,v){await dbPatch('estoque',id,{qtd:parseFloat(v)||0});const it=state.estoque.find(i=>i.id===id);if(it)it.qtd=parseFloat(v)||0;updateAll();}
 async function updCusto(id,v){await dbPatch('estoque',id,{custo:parseFloat(v)||0});const it=state.estoque.find(i=>i.id===id);if(it)it.custo=parseFloat(v)||0;updateAll();}
 async function delEntrada(id){await dbDelete('entradas',id);state.entradas=state.entradas.filter(e=>e.id!==id);updateAll();}
@@ -981,7 +1308,11 @@ async function delSaida(id){await dbDelete('saidas',id);state.saidas=state.saida
 async function delEstoque(id){await dbDelete('estoque',id);state.estoque=state.estoque.filter(i=>i.id!==id);updateAll();}
 async function delCompra(id){await dbDelete('compras',id);state.compras=state.compras.filter(c=>c.id!==id);updateAll();}
 async function delFutura(id){await dbDelete('futuras',id);state.futuras=state.futuras.filter(f=>f.id!==id);updateAll();}
-async function pagarConta(id){await dbPatch('futuras',id,{pago:true});const f=state.futuras.find(f=>f.id===id);if(f)f.pago=true;updateAll();}
+async function pagarConta(id){
+  await dbPatch('futuras',id,{pago:true});
+  try{state.futuras=await dbGet('futuras','order=vencimento.asc');}catch(e){const f=state.futuras.find(f=>f.id===id);if(f)f.pago=true;}
+  updateAll();
+}
 async function pagarCompra(id){await dbPatch('compras',id,{status:'pago'});const c=state.compras.find(c=>c.id===id);if(c)c.status='pago';updateAll();}
 
 async function fecharSemana(){const ef=parseFloat(document.getElementById('estoqueFinVal').value);if(isNaN(ef))return alert('Informe o valor do estoque final');const r=calcReceita(),cmv=Math.max(0,(state.estoqueInicialSemana||0)+calcCompras()-ef),pct=r>0?cmv/r*100:0;const rec=await dbPost('cmv_historico',[{semana:`Semana ${todayS()}`,receita:r,cmv,pct}]);state.cmvHistorico.unshift(rec[0]);state.estoqueInicialSemana=ef;await fetch(`${SB_URL}/rest/v1/config?chave=eq.estoque_inicial_semana`,{method:'PATCH',headers:hdrs,body:JSON.stringify({valor:String(ef)})}).catch(()=>dbPost('config',[{chave:'estoque_inicial_semana',valor:String(ef)}]));document.getElementById('estoqueFinVal').value='';alert(`✅ Semana fechada!\nCMV: R$ ${cmv.toFixed(2)} (${pct.toFixed(1)}%)`);updateAll();}
@@ -1044,6 +1375,8 @@ async function syncCW(){
 
 function processCWOrders(data){
   const pedidos=Array.isArray(data)?data:(data.orders||data.data||[]);
+  // Acumula todos os pedidos do mês para ranking de pizzas
+  pedidos.forEach(p=>{if(!state.cwAllPedidos.find(x=>x.id===p.id))state.cwAllPedidos.push(p);});
   let novos=0,total=0;
   pedidos.forEach(p=>{
     const id='cw_'+(p.id||Math.random()),v=parseFloat(p.total||p.total_price||p.value||0);
@@ -1078,6 +1411,7 @@ function showPage(id,el){
   document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   el.classList.add('active');
+  if(id==='overview'){setTimeout(()=>{renderHomeCharts();renderAcumulado();},100);}
   if(id==='graficos')renderGraficos();
   if(id==='cmv'){renderCMVChart();setTimeout(renderCMVChart,200);}
   if(id==='variaveis')renderFinanceiroChart();
@@ -1086,8 +1420,6 @@ function showPage(id,el){
 setInterval(()=>{document.getElementById('clock').textContent=new Date().toLocaleTimeString('pt-BR');},1000);
 document.getElementById('clock').textContent=new Date().toLocaleTimeString('pt-BR');
 loadAll();
-setInterval(syncMP,30000);
-setTimeout(syncMP,3000);
 setTimeout(syncCW,5000);
 setInterval(syncCW,2*60000);
 </script>
