@@ -179,6 +179,7 @@ tr:hover td{background:#ffffff08;}
   <div id="alertas-container"></div>
   <div id="mp-sync-banner"></div>
 
+  <!-- RESUMO FINANCEIRO DO DIA -->
   <div class="cards">
     <div class="card green">
       <div class="card-icon">💰</div>
@@ -199,16 +200,16 @@ tr:hover td{background:#ffffff08;}
       <div class="card-sub">Despesas do dia</div>
     </div>
     <div class="card blue">
+      <div class="card-icon">🏆</div>
+      <div class="card-label">Lucro do Dia</div>
+      <div class="card-val" id="lucroHoje">R$ 0,00</div>
+      <div class="card-sub">Receita − Saídas</div>
+    </div>
+    <div class="card blue">
       <div class="card-icon">🗓️</div>
       <div class="card-label">Receita Semana</div>
       <div class="card-val" id="receitaSemana">R$ 0,00</div>
       <div class="card-sub">Seg → Dom</div>
-    </div>
-    <div class="card yellow">
-      <div class="card-icon">📦</div>
-      <div class="card-label">Estoque</div>
-      <div class="card-val yellow" id="estoqueTotal">R$ 0,00</div>
-      <div class="card-sub">Valor total</div>
     </div>
     <div class="card red">
       <div class="card-icon">⚠️</div>
@@ -218,14 +219,31 @@ tr:hover td{background:#ffffff08;}
     </div>
   </div>
 
+  <!-- ENTRADAS POR CANAL HOJE -->
   <div class="section">
-    <div class="section-title"><span class="icon">📅</span> Receita da Semana</div>
-    <div class="week-grid" id="weekGrid"></div>
+    <div class="section-title"><span class="icon">💳</span> Entradas por Canal — Hoje</div>
+    <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+      <div class="card green"><div class="card-icon">💳</div><div class="card-label">Stone</div><div class="card-val green" id="ovStone">R$ 0,00</div></div>
+      <div class="card green"><div class="card-icon">📱</div><div class="card-label">Mercado Pago</div><div class="card-val green" id="ovMP">R$ 0,00</div></div>
+      <div class="card green"><div class="card-icon">🛵</div><div class="card-label">iFood</div><div class="card-val green" id="ovIfood">R$ 0,00</div></div>
+      <div class="card green"><div class="card-icon">🍕</div><div class="card-label">Cardápio Web</div><div class="card-val green" id="ovCW">R$ 0,00</div></div>
+      <div class="card green"><div class="card-icon">💵</div><div class="card-label">Dinheiro/Pix</div><div class="card-val green" id="ovOutros">R$ 0,00</div></div>
+    </div>
   </div>
 
+  <!-- CONTAS A PAGAR URGENTES -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🔥</span> Contas Urgentes — Próximos 7 dias</div>
+    <div class="scrolltable">
+      <table><thead><tr><th>Vencimento</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th></th></tr></thead>
+      <tbody id="tblContasUrgentes"></tbody></table>
+    </div>
+  </div>
+
+  <!-- GRÁFICOS -->
   <div class="chart-grid">
     <div class="section">
-      <div class="section-title"><span class="icon">🥧</span> Entradas por Canal — Hoje</div>
+      <div class="section-title"><span class="icon">🥧</span> Entradas por Canal</div>
       <div style="position:relative;height:220px;"><canvas id="chartCanaisHome" role="img" aria-label="Entradas por canal hoje"></canvas></div>
     </div>
     <div class="section">
@@ -234,6 +252,7 @@ tr:hover td{background:#ffffff08;}
     </div>
   </div>
 
+  <!-- ÚLTIMAS MOVIMENTAÇÕES -->
   <div class="section">
     <div class="section-title"><span class="icon">⚡</span> Últimas Movimentações</div>
     <div class="scrolltable">
@@ -252,6 +271,20 @@ tr:hover td{background:#ffffff08;}
       <span id="mp-sync-info" style="font-size:0.75rem;color:var(--muted);font-weight:600">Nunca sincronizado</span>
     </div>
     <div id="mp-result" style="margin-top:10px"></div>
+  </div>
+
+  <!-- CONTAS A PAGAR RESUMIDAS NA ABA ENTRADAS -->
+  <div class="section">
+    <div class="section-title"><span class="icon">⚠️</span> Contas a Pagar — Resumo</div>
+    <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:12px">
+      <div class="card red"><div class="card-icon">💸</div><div class="card-label">Total a Pagar</div><div class="card-val red" id="entAPagarTotal">R$ 0,00</div></div>
+      <div class="card red"><div class="card-icon">🔥</div><div class="card-label">Vence em 7 dias</div><div class="card-val red" id="entAPagar7d">R$ 0,00</div></div>
+      <div class="card yellow"><div class="card-icon">📅</div><div class="card-label">Vence este mês</div><div class="card-val yellow" id="entAPagarMes">R$ 0,00</div></div>
+    </div>
+    <div class="scrolltable">
+      <table><thead><tr><th>Vencimento</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Status</th></tr></thead>
+      <tbody id="tblEntAPagar"></tbody></table>
+    </div>
   </div>
   <div class="section">
     <div class="section-title"><span class="icon">➕</span> Nova Entrada Manual</div>
@@ -684,7 +717,6 @@ async function initRealtime(){
 
 const fmt=v=>'R$ '+parseFloat(v||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 const nowT=()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-// Usa data local (Brasília) para evitar virada de dia após 21h em UTC
 const todayISO=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const todayS=()=>new Date().toLocaleDateString('pt-BR');
 const getWD=()=>['dom','seg','ter','qua','qui','sex','sab'][new Date().getDay()];
@@ -740,9 +772,17 @@ function updateAll(){
   document.getElementById('resumoBruto').textContent=fmt(r);
   document.getElementById('resumoFixos').textContent=fmt(calcAPagar());
   document.getElementById('resumoVariaveis').textContent=fmt(totV);
-  const lucro=r-calcAPagar()-totV;
-  document.getElementById('resumoLucro').textContent=fmt(lucro);
-  document.getElementById('resumoLucro').style.color=lucro>=0?'var(--green)':'var(--red)';
+  const lucroEstimado=r-calcAPagar()-totV;
+  document.getElementById('resumoLucro').textContent=fmt(lucroEstimado);
+  document.getElementById('resumoLucro').style.color=lucroEstimado>=0?'var(--green)':'var(--red)';
+  const lucroDia=calcReceita()-calcSaidas();
+  if(document.getElementById('lucroHoje')){document.getElementById('lucroHoje').textContent=fmt(lucroDia);document.getElementById('lucroHoje').style.color=lucroDia>=0?'var(--green)':'var(--red)';}
+  if(document.getElementById('ovStone'))document.getElementById('ovStone').textContent=fmt(canal('Stone'));
+  if(document.getElementById('ovMP'))document.getElementById('ovMP').textContent=fmt(canal('Mercado Pago'));
+  if(document.getElementById('ovIfood'))document.getElementById('ovIfood').textContent=fmt(canal('iFood'));
+  if(document.getElementById('ovCW'))document.getElementById('ovCW').textContent=fmt(canal('Cardápio Web'));
+  if(document.getElementById('ovOutros'))document.getElementById('ovOutros').textContent=fmt(canal('Dinheiro')+canal('Pix')+canal('Outro'));
+  renderContasUrgentes();renderEntAPagar();
   renderWeekGrid();renderAlertas();renderMovimentos();
   renderEntradas();renderSaidas();renderEstoque();
   renderCompras();renderFuturas();renderCmvHist();
@@ -883,6 +923,37 @@ function renderGraficos(){
   renderCMVChart();renderFinanceiroChart();
 }
 
+function renderContasUrgentes(){
+  const hoje=new Date(),em7=new Date(hoje);em7.setDate(hoje.getDate()+7);
+  const urgentes=state.futuras.filter(f=>{if(f.pago)return false;const v=new Date(f.vencimento+'T12:00:00');return v<=em7;}).sort((a,b)=>a.vencimento.localeCompare(b.vencimento));
+  const el=document.getElementById('tblContasUrgentes');if(!el)return;
+  el.innerHTML=urgentes.length>0?urgentes.map(f=>{
+    const dias=Math.ceil((new Date(f.vencimento+'T12:00:00')-hoje)/(1000*60*60*24));
+    const cor=dias<0?'var(--red)':dias<=2?'#FFB800':'var(--text)';
+    const label=dias<0?`${Math.abs(dias)}d atraso`:dias===0?'Hoje':dias===1?'Amanhã':`${dias}d`;
+    return`<tr><td style="color:${cor};font-weight:800">${f.vencimento} <span style="font-size:0.68rem;opacity:0.8">(${label})</span></td><td>${f.descricao}</td><td>${f.categoria||'—'}</td><td style="color:var(--red);font-weight:800">${fmt(f.valor)}</td><td><button class="pay-btn" onclick="pagarConta(${f.id})">✅ Pagar</button></td></tr>`;
+  }).join(''):'<tr><td colspan="5" style="color:var(--green);text-align:center;padding:16px">✅ Nenhuma conta urgente!</td></tr>';
+}
+
+function renderEntAPagar(){
+  const hoje=new Date(),em7=new Date(hoje);em7.setDate(hoje.getDate()+7);
+  const mesAtual=hoje.getMonth(),anoAtual=hoje.getFullYear();
+  const pendentes=state.futuras.filter(f=>!f.pago);
+  const total7d=pendentes.filter(f=>{const v=new Date(f.vencimento+'T12:00:00');return v<=em7;}).reduce((s,f)=>s+(parseFloat(f.valor)||0),0);
+  const totalMes=pendentes.filter(f=>{const v=new Date(f.vencimento+'T12:00:00');return v.getMonth()===mesAtual&&v.getFullYear()===anoAtual;}).reduce((s,f)=>s+(parseFloat(f.valor)||0),0);
+  if(document.getElementById('entAPagarTotal'))document.getElementById('entAPagarTotal').textContent=fmt(pendentes.reduce((s,f)=>s+(parseFloat(f.valor)||0),0));
+  if(document.getElementById('entAPagar7d'))document.getElementById('entAPagar7d').textContent=fmt(total7d);
+  if(document.getElementById('entAPagarMes'))document.getElementById('entAPagarMes').textContent=fmt(totalMes);
+  const el=document.getElementById('tblEntAPagar');if(!el)return;
+  const lista=pendentes.slice(0,8).sort((a,b)=>a.vencimento.localeCompare(b.vencimento));
+  el.innerHTML=lista.length>0?lista.map(f=>{
+    const dias=Math.ceil((new Date(f.vencimento+'T12:00:00')-hoje)/(1000*60*60*24));
+    const cor=dias<0?'var(--red)':dias<=2?'#FFB800':'var(--text)';
+    const label=dias<0?`${Math.abs(dias)}d atraso`:dias===0?'Hoje':dias===1?'Amanhã':`${dias}d`;
+    return`<tr><td style="color:${cor};font-weight:800">${f.vencimento} <small>(${label})</small></td><td>${f.descricao}</td><td>${f.categoria||'—'}</td><td style="color:var(--red);font-weight:800">${fmt(f.valor)}</td><td><span class="badge badge-yellow">Pendente</span></td></tr>`;
+  }).join(''):'<tr><td colspan="5" style="color:var(--green);text-align:center;padding:16px">✅ Sem contas pendentes!</td></tr>';
+}
+
 function renderCMVChart(){
   const cmvH=state.cmvHistorico.slice(-6).reverse();
   dc('cmvHist');
@@ -915,66 +986,55 @@ async function pagarCompra(id){await dbPatch('compras',id,{status:'pago'});const
 
 async function fecharSemana(){const ef=parseFloat(document.getElementById('estoqueFinVal').value);if(isNaN(ef))return alert('Informe o valor do estoque final');const r=calcReceita(),cmv=Math.max(0,(state.estoqueInicialSemana||0)+calcCompras()-ef),pct=r>0?cmv/r*100:0;const rec=await dbPost('cmv_historico',[{semana:`Semana ${todayS()}`,receita:r,cmv,pct}]);state.cmvHistorico.unshift(rec[0]);state.estoqueInicialSemana=ef;await fetch(`${SB_URL}/rest/v1/config?chave=eq.estoque_inicial_semana`,{method:'PATCH',headers:hdrs,body:JSON.stringify({valor:String(ef)})}).catch(()=>dbPost('config',[{chave:'estoque_inicial_semana',valor:String(ef)}]));document.getElementById('estoqueFinVal').value='';alert(`✅ Semana fechada!\nCMV: R$ ${cmv.toFixed(2)} (${pct.toFixed(1)}%)`);updateAll();}
 
-// MP SYNC
+// MP SYNC — via proxy Supabase (evita CORS do browser)
 async function syncMP(){
   document.getElementById('mp-sync-info').textContent='🔄 Sincronizando...';
   try{
-    // Usa meia-noite e 23:59:59 no horário local (Brasília), convertidos para ISO
-    const hoje=new Date();
-    const ini=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate(),0,0,0).toISOString();
-    const fim=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate(),23,59,59).toISOString();
-    let bloqueados=[];
-    try{const bl=await dbGet('mp_bloqueados','');bloqueados=(bl||[]).map(b=>b.mp_id);}catch(e){}
-    const entHoje=await dbGet('entradas',`data=eq.${todayISO()}&mp_id=not.is.null`);
-    const saiHoje=await dbGet('saidas',`data=eq.${todayISO()}&mp_id=not.is.null`);
+    const dh=todayISO();
+    const res=await fetch(`${SB_URL}/functions/v1/mp-proxy?date=${dh}`,{headers:{'Authorization':`Bearer ${SB_KEY}`,'apikey':SB_KEY}});
+    if(!res.ok)throw new Error(`Erro ${res.status}`);
+    const data=await res.json();
+    const pagamentos=data.pagamentos||[];
+    const movimentos=data.movimentos||[];
+    const entHoje=await dbGet('entradas',`data=eq.${dh}&mp_id=not.is.null`);
+    const saiHoje=await dbGet('saidas',`data=eq.${dh}&mp_id=not.is.null`);
     const syncedHoje=entHoje.map(e=>e.mp_id).concat(saiHoje.map(s=>s.mp_id)).filter(Boolean);
-    const resEnt=await fetch(`https://api.mercadopago.com/v1/payments/search?sort=date_created&criteria=desc&range=date_created&begin_date=${ini}&end_date=${fim}&status=approved&limit=100`,{headers:{'Authorization':`Bearer ${MP_TOKEN}`}});
-    if(!resEnt.ok)throw new Error(`Erro ${resEnt.status}`);
-    const dataEnt=await resEnt.json(),pagamentos=dataEnt.results||[];let novos=0;
+    let novosEnt=0,novosSai=0;
     for(const p of pagamentos){
       const mpId='mp_'+p.id;
-      if(bloqueados.includes(mpId)||syncedHoje.includes(mpId)||state.mpSyncedIds.includes(mpId))continue;
+      if(syncedHoje.includes(mpId)||state.mpSyncedIds.includes(mpId))continue;
       const v=parseFloat(p.transaction_amount)||0;
       if(v<=0||p.operation_type==='money_transfer'||p.operation_type==='recurring_payment')continue;
       const metodo=p.payment_type_id==='credit_card'?'Crédito':p.payment_type_id==='debit_card'?'Débito':'Pix/MP';
       const hora=new Date(p.date_created).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-      const rec=await dbPost('entradas',[{canal:'Mercado Pago',valor:v,descricao:`${metodo} — ID ${p.id}`,hora,data:todayISO(),auto:true,mp_id:mpId}]);
-      state.entradas.unshift(rec[0]);state.mpSyncedIds.push(mpId);novos++;
+      const rec=await dbPost('entradas',[{canal:'Mercado Pago',valor:v,descricao:`${metodo} — ID ${p.id}`,hora,data:dh,auto:true,mp_id:mpId}]);
+      state.entradas.unshift(rec[0]);state.mpSyncedIds.push(mpId);novosEnt++;
     }
-    const resSai=await fetch(`https://api.mercadopago.com/v1/account/movements/search?begin_date=${ini}&end_date=${fim}&limit=100`,{headers:{'Authorization':`Bearer ${MP_TOKEN}`}});
-    if(resSai.ok){
-      const dataSai=await resSai.json(),movs=dataSai.results||[];
-      for(const m of movs){
-        const mpId='mpmov_'+m.id;
-        if(bloqueados.includes(mpId)||syncedHoje.includes(mpId)||state.mpSyncedIds.includes(mpId))continue;
-        const v=parseFloat(m.amount)||0;if(v>=0)continue;
-        const valorAbs=Math.abs(v),desc=m.description||m.type||'Movimentação MP';
-        const cat=desc.toLowerCase().includes('taxa')||m.type==='fee'?'Taxa MP':desc.toLowerCase().includes('pix')||m.type?.includes('transfer')?'Pix/Transferência MP':'Pagamento MP';
-        const hora=new Date(m.date||m.date_created).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-        const rec=await dbPost('saidas',[{categoria:cat,valor:valorAbs,descricao:`${cat} — ${desc}`,hora,data:todayISO(),mp_id:mpId}]);
-        state.saidas.unshift(rec[0]);state.mpSyncedIds.push(mpId);
-      }
+    for(const m of movimentos){
+      const mpId='mpmov_'+m.id;
+      if(syncedHoje.includes(mpId)||state.mpSyncedIds.includes(mpId))continue;
+      const v=parseFloat(m.amount)||0;if(v>=0)continue;
+      const valorAbs=Math.abs(v),desc=m.description||m.type||'Movimentação MP';
+      const cat=desc.toLowerCase().includes('taxa')||m.type==='fee'?'Taxa MP':desc.toLowerCase().includes('pix')||m.type?.includes('transfer')?'Pix/Transferência MP':'Pagamento MP';
+      const hora=new Date(m.date||m.date_created).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      const rec=await dbPost('saidas',[{categoria:cat,valor:valorAbs,descricao:`${cat} — ${desc}`,hora,data:dh,mp_id:mpId}]);
+      state.saidas.unshift(rec[0]);state.mpSyncedIds.push(mpId);novosSai++;
     }
-    document.getElementById('mp-sync-info').textContent=`Última sync: ${nowT()} — ${pagamentos.length} transações`;
-    if(novos>0){document.getElementById('mp-sync-banner').innerHTML=`<div class="alert alert-green">✅ ${novos} nova(s) entrada(s) do Mercado Pago!</div>`;}
+    document.getElementById('mp-sync-info').textContent=`Última sync: ${nowT()} — ${pagamentos.length} pagtos, ${movimentos.length} movtos`;
+    if(novosEnt>0||novosSai>0){document.getElementById('mp-sync-banner').innerHTML=`<div class="alert alert-green">✅ MP: ${novosEnt} entrada(s) e ${novosSai} saída(s) novas!</div>`;}
     else document.getElementById('mp-sync-banner').innerHTML='';
     updateAll();
   }catch(e){document.getElementById('mp-sync-info').textContent=`Erro: ${e.message}`;}
 }
 
 async function syncMPMovimentacoes(){
-  try{
-    const hoje=new Date();
-    const ini=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate(),0,0,0).toISOString();
-    const fim=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate(),23,59,59).toISOString();
-    const r=await fetch(`https://api.mercadopago.com/v1/account/movements/search?begin_date=${ini}&end_date=${fim}&limit=100`,{headers:{'Authorization':`Bearer ${MP_TOKEN}`}});if(!r.ok)return;const data=await r.json(),movs=data.results||[];let novos=0;for(const m of movs){const mpId='mpmov_'+m.id;if(state.mpSyncedIds.includes(mpId))continue;const v=parseFloat(m.amount)||0;if(v>=0)continue;const valorAbs=Math.abs(v),desc=m.description||m.type||'MP';const cat=desc.toLowerCase().includes('taxa')||m.type==='fee'?'Taxa MP':desc.toLowerCase().includes('pix')||m.type?.includes('transfer')?'Pix/Transferência MP':'Pagamento MP';const hora=new Date(m.date||m.date_created).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});const rec=await dbPost('saidas',[{categoria:cat,valor:valorAbs,descricao:`${cat} — ${desc}`,hora,data:todayISO(),mp_id:mpId}]);state.saidas.unshift(rec[0]);state.mpSyncedIds.push(mpId);novos++;}if(novos>0)updateAll();}catch(e){console.warn(e.message);}
+  try{const hoje=new Date(),ini=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()).toISOString(),fim=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate(),23,59,59).toISOString();const r=await fetch(`https://api.mercadopago.com/v1/account/movements/search?begin_date=${ini}&end_date=${fim}&limit=100`,{headers:{'Authorization':`Bearer ${MP_TOKEN}`}});if(!r.ok)return;const data=await r.json(),movs=data.results||[];let novos=0;for(const m of movs){const mpId='mpmov_'+m.id;if(state.mpSyncedIds.includes(mpId))continue;const v=parseFloat(m.amount)||0;if(v>=0)continue;const valorAbs=Math.abs(v),desc=m.description||m.type||'MP';const cat=desc.toLowerCase().includes('taxa')||m.type==='fee'?'Taxa MP':desc.toLowerCase().includes('pix')||m.type?.includes('transfer')?'Pix/Transferência MP':'Pagamento MP';const hora=new Date(m.date||m.date_created).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});const rec=await dbPost('saidas',[{categoria:cat,valor:valorAbs,descricao:`${cat} — ${desc}`,hora,data:todayISO(),mp_id:mpId}]);state.saidas.unshift(rec[0]);state.mpSyncedIds.push(mpId);novos++;}if(novos>0)updateAll();}catch(e){console.warn(e.message);}
 }
 
 // CW SYNC
 async function syncCW(){
   document.getElementById('cw-sync-info').textContent='🔄 Buscando pedidos...';
   try{
-    // Usa data local (Brasília) para não mudar de dia após 21h UTC
     const dh=todayISO();
     const res=await fetch(`${SB_URL}/functions/v1/cardapioweb-proxy?date=${dh}`,{headers:{'Authorization':`Bearer ${SB_KEY}`,'apikey':SB_KEY}});
     if(!res.ok)throw new Error(`Erro ${res.status}`);
